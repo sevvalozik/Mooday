@@ -1,0 +1,185 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String   @id @default(uuid())
+  email        String   @unique
+  username     String   @unique
+  displayName  String
+  passwordHash String
+  avatarUrl    String?
+  bio          String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  preferences    UserPreferences?
+  moodLogs       MoodLog[]
+  streak         Streak?
+  friendshipsA   Friendship[]     @relation("FriendA")
+  friendshipsB   Friendship[]     @relation("FriendB")
+  ownedGroups    Group[]
+  groupMembers   GroupMember[]
+  sentReactions  Reaction[]       @relation("ReactionSender")
+  recvReactions  Reaction[]       @relation("ReactionReceiver")
+  sentMessages   Message[]        @relation("MessageSender")
+  recvMessages   Message[]        @relation("MessageReceiver")
+  sentMusic      MusicShare[]     @relation("MusicSender")
+  recvMusic      MusicShare[]     @relation("MusicReceiver")
+  notifications  Notification[]
+  timeCapsules   TimeCapsule[]
+}
+
+model UserPreferences {
+  id              String  @id @default(uuid())
+  userId          String  @unique
+  user            User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  theme           String  @default("dark")
+  sphereStyle     String  @default("default")
+  backgroundStyle String  @default("particles")
+  chatBackground  String  @default("default")
+  privacyLevel    String  @default("friends")
+  soundEnabled    Boolean @default(true)
+  notificationsOn Boolean @default(true)
+}
+
+model MoodLog {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  emotion   String
+  valence   Float
+  arousal   Float
+  intensity Int
+  colorHex  String
+  journal   String?
+  createdAt DateTime @default(now())
+
+  reactions Reaction[]
+
+  @@index([userId, createdAt])
+}
+
+model Streak {
+  userId          String    @id
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  currentCount    Int       @default(0)
+  longestCount    Int       @default(0)
+  lastLogDate     DateTime?
+  unlockedEffects String[]  @default([])
+}
+
+model Friendship {
+  id        String   @id @default(uuid())
+  userAId   String
+  userBId   String
+  userA     User     @relation("FriendA", fields: [userAId], references: [id], onDelete: Cascade)
+  userB     User     @relation("FriendB", fields: [userBId], references: [id], onDelete: Cascade)
+  status    String   @default("pending")
+  createdAt DateTime @default(now())
+
+  @@unique([userAId, userBId])
+  @@index([userAId])
+  @@index([userBId])
+}
+
+model Group {
+  id        String        @id @default(uuid())
+  name      String
+  ownerId   String
+  owner     User          @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  emoji     String        @default("👥")
+  createdAt DateTime      @default(now())
+  members   GroupMember[]
+}
+
+model GroupMember {
+  id                 String  @id @default(uuid())
+  groupId            String
+  group              Group   @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  userId             String
+  user               User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  notifyOnMoodChange Boolean @default(true)
+
+  @@unique([groupId, userId])
+  @@index([groupId])
+  @@index([userId])
+}
+
+model Reaction {
+  id         String   @id @default(uuid())
+  senderId   String
+  sender     User     @relation("ReactionSender", fields: [senderId], references: [id], onDelete: Cascade)
+  receiverId String
+  receiver   User     @relation("ReactionReceiver", fields: [receiverId], references: [id], onDelete: Cascade)
+  moodLogId  String?
+  moodLog    MoodLog? @relation(fields: [moodLogId], references: [id], onDelete: SetNull)
+  type       String
+  emoji      String?
+  createdAt  DateTime @default(now())
+
+  @@index([receiverId])
+  @@index([senderId])
+}
+
+model Message {
+  id         String   @id @default(uuid())
+  senderId   String
+  sender     User     @relation("MessageSender", fields: [senderId], references: [id], onDelete: Cascade)
+  receiverId String
+  receiver   User     @relation("MessageReceiver", fields: [receiverId], references: [id], onDelete: Cascade)
+  content    String
+  msgType    String   @default("text")
+  read       Boolean  @default(false)
+  createdAt  DateTime @default(now())
+
+  @@index([senderId, receiverId, createdAt])
+}
+
+model MusicShare {
+  id         String   @id @default(uuid())
+  senderId   String
+  sender     User     @relation("MusicSender", fields: [senderId], references: [id], onDelete: Cascade)
+  receiverId String
+  receiver   User     @relation("MusicReceiver", fields: [receiverId], references: [id], onDelete: Cascade)
+  songTitle  String
+  artistName String?
+  songUrl    String
+  platform   String
+  note       String?
+  createdAt  DateTime @default(now())
+
+  @@index([receiverId])
+}
+
+model Notification {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type      String
+  title     String
+  body      String
+  data      Json?
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([userId, read, createdAt])
+}
+
+model TimeCapsule {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  emotion   String
+  message   String
+  deliverAt DateTime
+  delivered Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+}

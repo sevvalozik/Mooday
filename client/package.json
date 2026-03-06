@@ -1,0 +1,31 @@
+{
+  "name": "mooday-client",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-router-dom": "^6.26.1",
+    "axios": "^1.7.5",
+    "zustand": "^4.5.5",
+    "@react-three/fiber": "^8.17.6",
+    "@react-three/drei": "^9.112.0",
+    "@react-three/postprocessing": "^2.16.2",
+    "three": "^0.168.0",
+    "framer-motion": "^11.3.28",
+    "socket.io-client": "^4.7.5",
+    "recharts": "^2.12.7"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.3.1",
+    "@tailwindcss/vite": "^4.0.0",
+    "tailwindcss": "^4.0.0",
+    "vite": "^5.4.2"
+  }
+}

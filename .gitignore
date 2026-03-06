@@ -1,0 +1,9 @@
+node_modules/
+.env
+dist/
+build/
+.prisma/
+postgres-data/
+redis-data/
+*.log
+.DS_Store
