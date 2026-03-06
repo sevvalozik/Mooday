@@ -4,8 +4,8 @@ const tabs = [
   { to: '/dashboard', label: 'Galaxy', icon: '🌌' },
   { to: '/profile', label: 'Profile', icon: '🔮' },
   { to: '/mood/new', label: 'Log', icon: '✨' },
+  { to: '/friends', label: 'Friends', icon: '🤝' },
   { to: '/messages', label: 'Chat', icon: '💬' },
-  { to: '/settings', label: 'More', icon: '⚙️' },
 ];
 
 export const MobileNav = () => {

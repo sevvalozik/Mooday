@@ -4,6 +4,7 @@ const navItems = [
   { to: '/dashboard', label: 'Galaxy', icon: '🌌' },
   { to: '/profile', label: 'Profile', icon: '🔮' },
   { to: '/mood/new', label: 'Log Mood', icon: '✨' },
+  { to: '/friends', label: 'Friends', icon: '🤝' },
   { to: '/messages', label: 'Messages', icon: '💬' },
   { to: '/groups', label: 'Groups', icon: '👥' },
   { to: '/summary', label: 'Summary', icon: '📊' },

@@ -12,6 +12,7 @@ import { Groups } from './pages/Groups.jsx';
 import { MonthlySummary } from './pages/MonthlySummary.jsx';
 import { Settings } from './pages/Settings.jsx';
 import { Notifications } from './pages/Notifications.jsx';
+import { Friends } from './pages/Friends.jsx';
 import { useSocket } from './hooks/useSocket.js';
 
 export default function App() {
@@ -25,6 +26,7 @@ export default function App() {
       <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
       <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
       <Route path="/mood/new" element={<ProtectedRoute><MoodLogger /></ProtectedRoute>} />
+      <Route path="/friends" element={<ProtectedRoute><Friends /></ProtectedRoute>} />
       <Route path="/friends/:id" element={<ProtectedRoute><FriendProfile /></ProtectedRoute>} />
       <Route path="/messages" element={<ProtectedRoute><Messages /></ProtectedRoute>} />
       <Route path="/messages/:friendId" element={<ProtectedRoute><Messages /></ProtectedRoute>} />

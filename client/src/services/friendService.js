@@ -1,5 +1,10 @@
 import api from './api.js';
 
+export const searchUsers = async (query) => {
+  const { data } = await api.get(`/friends/search?q=${encodeURIComponent(query)}`);
+  return data.data;
+};
+
 export const getFriends = async () => {
   const { data } = await api.get('/friends');
   return data.data;
