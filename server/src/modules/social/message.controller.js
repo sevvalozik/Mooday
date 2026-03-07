@@ -4,7 +4,7 @@ import * as messageService from './message.service.js';
 const sendMessageSchema = z.object({
   receiverId: z.string().uuid('Invalid receiver ID'),
   content: z.string().min(1, 'Content is required').max(2000, 'Message too long'),
-  msgType: z.enum(['text', 'emoji', 'image', 'mood', 'meme']).optional().default('text'),
+  msgType: z.enum(['text', 'emoji', 'image', 'mood', 'meme', 'music']).optional().default('text'),
 });
 
 export { sendMessageSchema };

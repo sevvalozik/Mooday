@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { AnimatePresence } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
 import { PageWrapper } from '../components/layout/PageWrapper.jsx';
 import { Button } from '../components/ui/Button.jsx';
 import { MemePicker } from '../components/ui/MemePicker.jsx';
@@ -9,6 +9,7 @@ import { useFriendStore } from '../stores/friendStore.js';
 import { parseMeme } from '../utils/memes.js';
 import * as messageService from '../services/messageService.js';
 import * as friendService from '../services/friendService.js';
+import * as musicService from '../services/musicService.js';
 
 const MemeCard = ({ content }) => {
   const meme = parseMeme(content);
@@ -22,6 +23,73 @@ const MemeCard = ({ content }) => {
   );
 };
 
+const PLATFORM_ICONS = { spotify: '🟢', youtube: '🔴', apple: '🍎', other: '🎵' };
+
+const MusicCard = ({ content }) => {
+  let song;
+  try { song = JSON.parse(content); } catch { return <p className="text-sm">{content}</p>; }
+  return (
+    <a
+      href={song.songUrl}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="flex items-center gap-3 rounded-lg bg-gradient-to-r from-purple-600/30 to-pink-600/30 px-4 py-3 transition-colors hover:from-purple-600/40 hover:to-pink-600/40"
+    >
+      <span className="text-2xl">{PLATFORM_ICONS[song.platform] || '🎵'}</span>
+      <div className="min-w-0 flex-1">
+        <p className="truncate text-sm font-semibold text-white">{song.songTitle}</p>
+        {song.artistName && <p className="truncate text-xs text-gray-300">{song.artistName}</p>}
+        {song.note && <p className="mt-1 truncate text-xs text-gray-400 italic">"{song.note}"</p>}
+      </div>
+      <span className="text-xs text-gray-400">&#8599;</span>
+    </a>
+  );
+};
+
+const SongShareModal = ({ onSend, onClose }) => {
+  const [songTitle, setSongTitle] = useState('');
+  const [artistName, setArtistName] = useState('');
+  const [songUrl, setSongUrl] = useState('');
+  const [platform, setPlatform] = useState('spotify');
+  const [note, setNote] = useState('');
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (!songTitle.trim() || !songUrl.trim()) return;
+    onSend({ songTitle: songTitle.trim(), artistName: artistName.trim(), songUrl: songUrl.trim(), platform, note: note.trim() });
+  };
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: 10 }}
+      className="absolute bottom-full left-0 right-0 mb-2 rounded-xl border border-white/10 bg-gray-900 p-4 shadow-xl"
+    >
+      <div className="mb-3 flex items-center justify-between">
+        <h3 className="text-sm font-semibold text-white">Share a Song</h3>
+        <button onClick={onClose} className="text-gray-400 hover:text-white">&times;</button>
+      </div>
+      <form onSubmit={handleSubmit} className="flex flex-col gap-2">
+        <input value={songTitle} onChange={(e) => setSongTitle(e.target.value)} placeholder="Song title *" className="rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-white placeholder-gray-500 outline-none focus:border-purple-500" />
+        <input value={artistName} onChange={(e) => setArtistName(e.target.value)} placeholder="Artist name" className="rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-white placeholder-gray-500 outline-none focus:border-purple-500" />
+        <input value={songUrl} onChange={(e) => setSongUrl(e.target.value)} placeholder="Song link (Spotify, YouTube, etc.) *" className="rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-white placeholder-gray-500 outline-none focus:border-purple-500" />
+        <div className="flex gap-2">
+          {['spotify', 'youtube', 'apple', 'other'].map((p) => (
+            <button key={p} type="button" onClick={() => setPlatform(p)} className={`rounded-lg px-3 py-1 text-xs font-medium transition-colors ${platform === p ? 'bg-purple-600 text-white' : 'bg-white/5 text-gray-400 hover:text-white'}`}>
+              {PLATFORM_ICONS[p]} {p}
+            </button>
+          ))}
+        </div>
+        <input value={note} onChange={(e) => setNote(e.target.value)} placeholder="Add a note (optional)" className="rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-white placeholder-gray-500 outline-none focus:border-purple-500" />
+        <button type="submit" disabled={!songTitle.trim() || !songUrl.trim()} className="rounded-lg bg-purple-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-purple-500 disabled:opacity-40">
+          Share Song
+        </button>
+      </form>
+    </motion.div>
+  );
+};
+
 export const Messages = () => {
   const { friendId } = useParams();
   const navigate = useNavigate();
@@ -31,6 +99,7 @@ export const Messages = () => {
   const [newMessage, setNewMessage] = useState('');
   const [sending, setSending] = useState(false);
   const [showMemes, setShowMemes] = useState(false);
+  const [showMusic, setShowMusic] = useState(false);
   const messagesEndRef = useRef(null);
 
   useEffect(() => {
@@ -78,6 +147,26 @@ export const Messages = () => {
         receiverId: friendId,
         content: JSON.stringify({ emoji: meme.emoji, text: meme.text, bg: meme.bg }),
         msgType: 'meme',
+      });
+      setMessages((prev) => [...prev, msg]);
+    } catch {
+      // silently fail
+    } finally {
+      setSending(false);
+    }
+  };
+
+  const handleSendSong = async (songData) => {
+    if (!friendId) return;
+    setShowMusic(false);
+    setSending(true);
+    try {
+      const song = await musicService.shareSong({ receiverId: friendId, ...songData });
+      // Add as a message-like entry in chat
+      const msg = await messageService.sendMessage({
+        receiverId: friendId,
+        content: JSON.stringify({ songTitle: songData.songTitle, artistName: songData.artistName, songUrl: songData.songUrl, platform: songData.platform, note: songData.note }),
+        msgType: 'music',
       });
       setMessages((prev) => [...prev, msg]);
     } catch {
@@ -144,18 +233,22 @@ export const Messages = () => {
                   {messages.map((msg) => {
                     const isOwn = msg.senderId === user?.id;
                     const isMeme = msg.msgType === 'meme';
+                    const isMusic = msg.msgType === 'music';
+                    const isSpecial = isMeme || isMusic;
 
                     return (
                       <div key={msg.id} className={`flex ${isOwn ? 'justify-end' : 'justify-start'}`}>
                         <div className={`max-w-[80%] rounded-2xl sm:max-w-[70%] ${
-                          isMeme ? 'p-1' : `px-3 py-2 sm:px-4 ${isOwn ? 'bg-purple-600 text-white' : 'bg-white/10 text-gray-200'}`
+                          isSpecial ? 'p-1' : `px-3 py-2 sm:px-4 ${isOwn ? 'bg-purple-600 text-white' : 'bg-white/10 text-gray-200'}`
                         }`}>
                           {isMeme ? (
                             <MemeCard content={msg.content} />
+                          ) : isMusic ? (
+                            <MusicCard content={msg.content} />
                           ) : (
                             <p className="text-sm">{msg.content}</p>
                           )}
-                          <p className={`mt-1 text-xs opacity-50 ${isMeme ? 'text-center text-gray-400' : ''}`}>
+                          <p className={`mt-1 text-xs opacity-50 ${isSpecial ? 'text-center text-gray-400' : ''}`}>
                             {new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                           </p>
                         </div>
@@ -175,18 +268,34 @@ export const Messages = () => {
                       onClose={() => setShowMemes(false)}
                     />
                   )}
+                  {showMusic && (
+                    <SongShareModal
+                      onSend={handleSendSong}
+                      onClose={() => setShowMusic(false)}
+                    />
+                  )}
                 </AnimatePresence>
 
                 <form onSubmit={handleSend} className="flex gap-2">
                   <button
                     type="button"
-                    onClick={() => setShowMemes((v) => !v)}
+                    onClick={() => { setShowMemes((v) => !v); setShowMusic(false); }}
                     className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-lg transition-colors ${
                       showMemes ? 'bg-purple-600 text-white' : 'bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white'
                     }`}
                     title="Send a meme"
                   >
                     <span className="text-lg">😂</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => { setShowMusic((v) => !v); setShowMemes(false); }}
+                    className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-lg transition-colors ${
+                      showMusic ? 'bg-purple-600 text-white' : 'bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white'
+                    }`}
+                    title="Share a song"
+                  >
+                    <span className="text-lg">🎵</span>
                   </button>
                   <input
                     value={newMessage}
