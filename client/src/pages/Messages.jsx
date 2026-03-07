@@ -6,6 +6,7 @@ import { Button } from '../components/ui/Button.jsx';
 import { MemePicker } from '../components/ui/MemePicker.jsx';
 import { useAuthStore } from '../stores/authStore.js';
 import { useFriendStore } from '../stores/friendStore.js';
+import { useSocketStore } from '../stores/socketStore.js';
 import { parseMeme } from '../utils/memes.js';
 import * as messageService from '../services/messageService.js';
 import * as friendService from '../services/friendService.js';
@@ -101,6 +102,7 @@ export const Messages = () => {
   const [showMemes, setShowMemes] = useState(false);
   const [showMusic, setShowMusic] = useState(false);
   const messagesEndRef = useRef(null);
+  const socket = useSocketStore((s) => s.socket);
 
   useEffect(() => {
     friendService.getFriends().then(setFriends).catch(() => {});
@@ -113,7 +115,27 @@ export const Messages = () => {
       }).catch(() => {});
     }
     setShowMemes(false);
+    setShowMusic(false);
   }, [friendId]);
+
+  // Listen for real-time incoming messages via socket
+  useEffect(() => {
+    if (!socket) return;
+
+    const handleIncoming = (message) => {
+      // Only add to chat if the message is from the friend we're currently chatting with
+      if (message.senderId === friendId) {
+        setMessages((prev) => {
+          // Avoid duplicates
+          if (prev.some((m) => m.id === message.id)) return prev;
+          return [...prev, message];
+        });
+      }
+    };
+
+    socket.on('message:new', handleIncoming);
+    return () => socket.off('message:new', handleIncoming);
+  }, [socket, friendId]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -238,17 +260,29 @@ export const Messages = () => {
 
                     return (
                       <div key={msg.id} className={`flex ${isOwn ? 'justify-end' : 'justify-start'}`}>
-                        <div className={`max-w-[80%] rounded-2xl sm:max-w-[70%] ${
-                          isSpecial ? 'p-1' : `px-3 py-2 sm:px-4 ${isOwn ? 'bg-purple-600 text-white' : 'bg-white/10 text-gray-200'}`
+                        {/* Friend avatar for non-own messages */}
+                        {!isOwn && (
+                          <div className="mr-2 mt-auto flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-pink-600/50 text-[10px] font-bold text-white">
+                            {msg.sender?.displayName?.charAt(0) || '?'}
+                          </div>
+                        )}
+                        <div className={`max-w-[75%] sm:max-w-[65%] ${
+                          isSpecial
+                            ? 'rounded-2xl p-1'
+                            : `px-3.5 py-2.5 text-sm ${
+                                isOwn
+                                  ? 'rounded-2xl rounded-br-md bg-purple-600 text-white'
+                                  : 'rounded-2xl rounded-bl-md bg-white/10 text-gray-100'
+                              }`
                         }`}>
                           {isMeme ? (
                             <MemeCard content={msg.content} />
                           ) : isMusic ? (
                             <MusicCard content={msg.content} />
                           ) : (
-                            <p className="text-sm">{msg.content}</p>
+                            <p>{msg.content}</p>
                           )}
-                          <p className={`mt-1 text-xs opacity-50 ${isSpecial ? 'text-center text-gray-400' : ''}`}>
+                          <p className={`mt-1 text-[10px] ${isOwn ? 'text-right text-white/50' : 'text-left text-gray-500'} ${isSpecial ? 'text-center text-gray-400' : ''}`}>
                             {new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                           </p>
                         </div>

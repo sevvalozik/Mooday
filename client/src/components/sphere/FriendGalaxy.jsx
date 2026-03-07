@@ -124,7 +124,7 @@ const GalaxyScene = ({ friends, onFriendClick, userMood }) => {
       />
 
       <EffectComposer>
-        <Bloom luminanceThreshold={0.4} intensity={0.8} radius={0.6} />
+        <Bloom luminanceThreshold={0.6} intensity={0.3} radius={0.4} />
       </EffectComposer>
     </>
   );

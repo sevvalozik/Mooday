@@ -58,12 +58,12 @@ export const wireframeVertexShader = /* glsl */ `
     vUv = uv;
     vNormal = normalize(normalMatrix * normal);
 
-    // Wireframe gentle pulsing displacement
-    float speed = 0.08 + uArousal * 0.1;
-    float noise = snoise(position * 2.0 + uTime * speed);
-    float pulse = sin(uTime * 0.5 + length(position) * 3.0) * 0.5 + 0.5;
-    float displacement = noise * (0.01 + uArousal * 0.03) * uIntensity;
-    displacement += pulse * 0.005 * uIntensity;
+    // Wireframe very subtle pulsing displacement
+    float speed = 0.03 + uArousal * 0.04;
+    float noise = snoise(position * 1.5 + uTime * speed);
+    float pulse = sin(uTime * 0.3 + length(position) * 2.0) * 0.5 + 0.5;
+    float displacement = noise * (0.005 + uArousal * 0.01) * uIntensity;
+    displacement += pulse * 0.002 * uIntensity;
 
     vec3 newPosition = position + normal * displacement;
     vPosition = newPosition;

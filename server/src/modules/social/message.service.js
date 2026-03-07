@@ -37,7 +37,7 @@ export const sendMessage = async (senderId, { receiverId, content, msgType }) =>
   if (getIO) {
     try {
       const io = getIO();
-      io.to(receiverId).emit('message:new', message);
+      io.to(`user:${receiverId}`).emit('message:new', message);
     } catch {
       // Socket not initialized or emission failed — non-critical
     }

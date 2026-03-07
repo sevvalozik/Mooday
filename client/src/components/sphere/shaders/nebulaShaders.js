@@ -58,12 +58,11 @@ export const nebulaVertexShader = /* glsl */ `
     vUv = uv;
     vNormal = normalize(normalMatrix * normal);
 
-    // Nebula: gentle swirling displacement
-    float speed = 0.05 + uArousal * 0.06;
-    float n1 = snoise(position * 1.5 + uTime * speed);
-    float n2 = snoise(position * 3.0 + uTime * speed * 0.7 + 100.0) * 0.4;
+    // Nebula: very subtle swirling displacement
+    float speed = 0.02 + uArousal * 0.03;
+    float n1 = snoise(position * 1.2 + uTime * speed);
 
-    float displacement = (n1 + n2) * (0.02 + uArousal * 0.04) * uIntensity;
+    float displacement = n1 * (0.008 + uArousal * 0.012) * uIntensity;
     vDisplacement = displacement;
 
     vec3 newPosition = position + normal * displacement;
