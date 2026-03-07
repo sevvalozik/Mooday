@@ -4,6 +4,7 @@ import { useAuthStore } from '../stores/authStore.js';
 import { useSocketStore } from '../stores/socketStore.js';
 import { useFriendStore } from '../stores/friendStore.js';
 import { useNotificationStore } from '../stores/notificationStore.js';
+import { toast } from '../components/ui/Toast.jsx';
 
 export const useSocket = () => {
   const { token, isAuthenticated } = useAuthStore();
@@ -47,17 +48,20 @@ export const useSocket = () => {
         read: false,
         createdAt: new Date().toISOString(),
       });
+      toast(`❤️ Someone sent you a ${reaction.type}`, 'info');
     });
 
     newSocket.on('message:new', (message) => {
+      const senderName = message.sender?.displayName || 'Someone';
       addNotification({
         id: message.id,
         type: 'message',
         title: 'New Message',
-        body: `${message.sender?.displayName || 'Someone'} sent you a message`,
+        body: `${senderName} sent you a message`,
         read: false,
         createdAt: new Date().toISOString(),
       });
+      toast(`💬 ${senderName}: ${message.msgType === 'meme' ? 'sent a meme' : message.msgType === 'music' ? 'shared a song' : message.content?.slice(0, 50) || 'New message'}`, 'info');
     });
 
     setSocket(newSocket);
