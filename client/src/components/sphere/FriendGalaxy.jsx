@@ -1,9 +1,7 @@
 import { Suspense, useRef, useMemo } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { Text, OrbitControls, Stars } from '@react-three/drei';
-import { EffectComposer, Bloom } from '@react-three/postprocessing';
 import * as THREE from 'three';
-import { MoodSphereCore } from './MoodSphereCore.jsx';
 import { PlanetSphere } from './PlanetSphere.jsx';
 import { useNavigate } from 'react-router-dom';
 import { EMOTIONS } from '../../utils/emotionConfig.js';
@@ -25,10 +23,55 @@ const OrbitRing = ({ radius, opacity = 0.08 }) => {
   );
 };
 
+/* Simple glowing sun sphere — no shader displacement, no jitter */
+const SunSphere = ({ emotion = 'calm' }) => {
+  const meshRef = useRef();
+  const glowRef = useRef();
+  const config = EMOTIONS[emotion] || EMOTIONS.calm;
+  const color = new THREE.Color(config.color);
+
+  useFrame((state) => {
+    if (meshRef.current) {
+      meshRef.current.rotation.y = state.clock.getElapsedTime() * 0.05;
+    }
+    if (glowRef.current) {
+      // Very gentle breathing glow
+      const pulse = Math.sin(state.clock.getElapsedTime() * 0.5) * 0.1 + 0.9;
+      glowRef.current.scale.setScalar(pulse);
+    }
+  });
+
+  return (
+    <group>
+      {/* Core sphere */}
+      <mesh ref={meshRef}>
+        <sphereGeometry args={[0.85, 64, 64]} />
+        <meshStandardMaterial
+          color={color}
+          emissive={color}
+          emissiveIntensity={0.6}
+          roughness={0.3}
+          metalness={0.1}
+        />
+      </mesh>
+      {/* Outer glow */}
+      <mesh ref={glowRef}>
+        <sphereGeometry args={[1.05, 32, 32]} />
+        <meshBasicMaterial
+          color={color}
+          transparent
+          opacity={0.15}
+          side={THREE.BackSide}
+        />
+      </mesh>
+    </group>
+  );
+};
+
 const FriendOrb = ({ friend, planetIndex, orbitRadius, onClick }) => {
   const groupRef = useRef();
   const emotion = friend.latestMood?.emotion || 'calm';
-  const orbitSpeed = 0.12 - planetIndex * 0.01;
+  const orbitSpeed = 0.08 - planetIndex * 0.008;
   const startAngle = (planetIndex / 8) * Math.PI * 2;
 
   useFrame((state) => {
@@ -37,7 +80,8 @@ const FriendOrb = ({ friend, planetIndex, orbitRadius, onClick }) => {
       const angle = startAngle + t * orbitSpeed;
       groupRef.current.position.x = Math.cos(angle) * orbitRadius;
       groupRef.current.position.z = Math.sin(angle) * orbitRadius;
-      groupRef.current.position.y = Math.sin(t * 0.3 + planetIndex) * 0.15;
+      // No y-axis bobbing — keeps planets stable
+      groupRef.current.position.y = 0;
     }
   });
 
@@ -71,30 +115,16 @@ const FriendOrb = ({ friend, planetIndex, orbitRadius, onClick }) => {
 };
 
 const GalaxyScene = ({ friends, onFriendClick, userMood }) => {
-  const sunRef = useRef();
-
-  useFrame((state) => {
-    if (sunRef.current) {
-      sunRef.current.rotation.y = state.clock.getElapsedTime() * 0.08;
-    }
-  });
-
   return (
     <>
-      <ambientLight intensity={0.12} />
-      <pointLight position={[0, 0, 0]} intensity={1.2} color="#FFD700" distance={25} decay={2} />
-      <pointLight position={[10, 5, 10]} intensity={0.2} />
+      <ambientLight intensity={0.2} />
+      <pointLight position={[0, 0, 0]} intensity={1.5} color="#FFD700" distance={25} decay={2} />
+      <pointLight position={[10, 5, 10]} intensity={0.3} />
 
-      <Stars radius={50} depth={50} count={3000} factor={3} saturation={0.5} fade speed={0.5} />
+      <Stars radius={50} depth={50} count={3000} factor={3} saturation={0.5} fade speed={0.3} />
 
-      {/* User sphere as "sun" */}
-      <group ref={sunRef}>
-        <MoodSphereCore
-          emotion={userMood?.emotion || 'calm'}
-          intensity={userMood?.intensity || 5}
-          size={0.9}
-        />
-      </group>
+      {/* User sphere as "sun" — simple glowing sphere, no shader jitter */}
+      <SunSphere emotion={userMood?.emotion || 'calm'} />
 
       {/* Orbit rings */}
       {friends.map((_, i) => (
@@ -123,9 +153,7 @@ const GalaxyScene = ({ friends, onFriendClick, userMood }) => {
         minPolarAngle={Math.PI * 0.3}
       />
 
-      <EffectComposer>
-        <Bloom luminanceThreshold={0.6} intensity={0.3} radius={0.4} />
-      </EffectComposer>
+      {/* No Bloom / EffectComposer — removed to eliminate jitter */}
     </>
   );
 };
