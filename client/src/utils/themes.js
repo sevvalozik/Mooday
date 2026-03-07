@@ -1,72 +1,28 @@
 export const THEMES = {
-  dark: {
-    '--color-primary': '#8b5cf6',
-    '--color-primary-light': '#a78bfa',
-    '--color-primary-dark': '#7c3aed',
-    '--color-bg': '#030712',
-    '--color-surface': '#111827',
-    '--color-surface-light': '#1f2937',
-    '--color-text': '#f9fafb',
-    '--color-text-muted': '#9ca3af',
-    '--color-border': '#374151',
-  },
-  light: {
-    '--color-primary': '#7c3aed',
-    '--color-primary-light': '#8b5cf6',
-    '--color-primary-dark': '#6d28d9',
-    '--color-bg': '#f9fafb',
-    '--color-surface': '#ffffff',
-    '--color-surface-light': '#f3f4f6',
-    '--color-text': '#111827',
-    '--color-text-muted': '#6b7280',
-    '--color-border': '#e5e7eb',
-  },
-  cosmic: {
-    '--color-primary': '#ec4899',
-    '--color-primary-light': '#f472b6',
-    '--color-primary-dark': '#db2777',
-    '--color-bg': '#0f0720',
-    '--color-surface': '#1a0e33',
-    '--color-surface-light': '#251547',
-    '--color-text': '#f0e6ff',
-    '--color-text-muted': '#a78bfa',
-    '--color-border': '#3b1f6e',
-  },
-  sunset: {
-    '--color-primary': '#f97316',
-    '--color-primary-light': '#fb923c',
-    '--color-primary-dark': '#ea580c',
-    '--color-bg': '#1c0a00',
-    '--color-surface': '#2d1400',
-    '--color-surface-light': '#3d1e00',
-    '--color-text': '#fff7ed',
-    '--color-text-muted': '#fdba74',
-    '--color-border': '#7c2d12',
-  },
+  dark: { name: 'Midnight', preview: ['#050810', '#8b5cf6', '#1e1b4b'] },
+  light: { name: 'Daylight', preview: ['#f8fafc', '#7c3aed', '#e2e8f0'] },
+  cosmic: { name: 'Nebula', preview: ['#080016', '#ec4899', '#2e1065'] },
+  sunset: { name: 'Golden Hour', preview: ['#0a0805', '#f97316', '#451a03'] },
 };
 
 export const applyTheme = (themeName) => {
-  const theme = THEMES[themeName] || THEMES.dark;
-  const root = document.documentElement;
-  for (const [key, value] of Object.entries(theme)) {
-    root.style.setProperty(key, value);
-  }
-  localStorage.setItem('theme', themeName);
+  const name = THEMES[themeName] ? themeName : 'dark';
+  document.documentElement.setAttribute('data-theme', name);
+  localStorage.setItem('theme', name);
 };
 
-// Load saved theme on app start
 export const loadSavedTheme = () => {
   const saved = localStorage.getItem('theme');
   if (saved && THEMES[saved]) {
     applyTheme(saved);
     return saved;
   }
+  applyTheme('dark');
   return 'dark';
 };
 
-export const THEME_LIST = [
-  { key: 'dark', label: 'Dark' },
-  { key: 'light', label: 'Light' },
-  { key: 'cosmic', label: 'Cosmic' },
-  { key: 'sunset', label: 'Sunset' },
-];
+export const THEME_LIST = Object.entries(THEMES).map(([key, value]) => ({
+  key,
+  name: value.name,
+  preview: value.preview,
+}));

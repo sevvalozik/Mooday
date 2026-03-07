@@ -76,7 +76,7 @@ export const Dashboard = () => {
           </div>
           <Link
             to="/mood/new"
-            className="flex h-14 w-14 items-center justify-center rounded-full bg-purple-600 text-2xl shadow-lg shadow-purple-600/30 transition-transform hover:scale-110"
+            className="flex h-14 w-14 items-center justify-center rounded-full bg-purple-600 text-2xl text-white shadow-lg shadow-purple-600/30 transition-transform hover:scale-110"
           >
             +
           </Link>

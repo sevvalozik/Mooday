@@ -103,13 +103,23 @@ export const Settings = () => {
                 <button
                   key={t.key}
                   onClick={() => handleThemeChange(t.key)}
-                  className={`rounded-lg px-4 py-3 text-sm font-medium transition-all ${
+                  className={`group overflow-hidden rounded-xl border-2 text-left transition-all ${
                     theme === t.key
-                      ? 'bg-purple-600 text-white'
-                      : 'bg-white/5 text-gray-400 hover:bg-white/10'
+                      ? 'border-purple-500 ring-2 ring-purple-500/20'
+                      : 'border-white/10 hover:border-white/20'
                   }`}
                 >
-                  {t.label}
+                  <div className="flex h-10 overflow-hidden">
+                    <div className="flex-1" style={{ backgroundColor: t.preview[0] }} />
+                    <div className="w-10" style={{ backgroundColor: t.preview[1] }} />
+                    <div className="flex-1" style={{ backgroundColor: t.preview[2] }} />
+                  </div>
+                  <div className="px-3 py-2.5">
+                    <p className={`text-sm font-semibold ${theme === t.key ? 'text-purple-400' : 'text-white'}`}>
+                      {t.name}
+                    </p>
+                    <p className="text-[11px] text-gray-500 capitalize">{t.key}</p>
+                  </div>
                 </button>
               ))}
             </div>

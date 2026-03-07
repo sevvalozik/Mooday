@@ -7,13 +7,29 @@ import { EMOTIONS } from '../utils/emotionConfig.js';
 const CYCLE_EMOTIONS = ['happiness', 'sadness', 'calm', 'excitement', 'anxiety', 'hopeful'];
 const SPHERE_STYLES = ['default', 'crystal', 'nebula', 'wireframe'];
 
+const FeatureIcon = ({ type }) => {
+  const paths = {
+    sphere: 'M21 12a9 9 0 11-18 0 9 9 0 0118 0z M12 3v18 M3 12h18 M5.636 5.636l12.728 12.728 M18.364 5.636L5.636 18.364',
+    galaxy: 'M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.455 2.456L21.75 6l-1.036.259a3.375 3.375 0 00-2.455 2.456zM16.894 20.567L16.5 21.75l-.394-1.183a2.25 2.25 0 00-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 001.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 001.423 1.423l1.183.394-1.183.394a2.25 2.25 0 00-1.423 1.423z',
+    chart: 'M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z',
+    heart: 'M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z',
+    chat: 'M20.25 8.511c.884.284 1.5 1.128 1.5 2.097v4.286c0 1.136-.847 2.1-1.98 2.193-.34.027-.68.052-1.02.072v3.091l-3-3c-1.354 0-2.694-.055-4.02-.163a2.115 2.115 0 01-.825-.242m9.345-8.334a2.126 2.126 0 00-.476-.095 48.64 48.64 0 00-8.048 0c-1.131.094-1.976 1.057-1.976 2.192v4.286c0 .837.46 1.58 1.155 1.951m9.345-8.334V6.637c0-1.621-1.152-3.026-2.76-3.235A48.455 48.455 0 0011.25 3c-2.115 0-4.198.137-6.24.402-1.608.209-2.76 1.614-2.76 3.235v6.226c0 1.621 1.152 3.026 2.76 3.235.577.075 1.157.14 1.74.194V21l4.155-4.155',
+    music: 'M9 9l10.5-3m0 6.553v3.75a2.25 2.25 0 01-1.632 2.163l-1.32.377a1.803 1.803 0 11-.99-3.467l2.31-.66a2.25 2.25 0 001.632-2.163zm0 0V4.846a2.25 2.25 0 00-1.632-2.163l-6-1.714A2.25 2.25 0 004.5 3.132v15.12a2.25 2.25 0 01-1.632 2.163l-1.32.377a1.803 1.803 0 11-.99-3.467l2.31-.66A2.25 2.25 0 004.5 14.502V9',
+  };
+  return (
+    <svg className="h-7 w-7" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+      <path strokeLinecap="round" strokeLinejoin="round" d={paths[type]} />
+    </svg>
+  );
+};
+
 const features = [
-  { title: 'Living 3D Sphere', desc: 'Your emotions visualized as a breathing, animated sphere with custom GLSL shaders', icon: '🔮' },
-  { title: 'Friend Galaxy', desc: "See your friends' emotional states in an interactive 3D constellation", icon: '🌌' },
-  { title: 'Mood Insights', desc: 'AI-powered weekly reports, trend detection, and emotional compatibility', icon: '📊' },
-  { title: 'Real-time Reactions', desc: 'Send hugs, cheers, and high-fives to friends in real-time', icon: '🤗' },
-  { title: 'Meme Sharing', desc: 'Express yourself with mood memes — send the perfect reaction to friends', icon: '😂' },
-  { title: 'Music Sharing', desc: 'Share songs that match your mood with friends', icon: '🎵' },
+  { title: 'Living 3D Sphere', desc: 'Your emotions visualized as a breathing, animated sphere with custom GLSL shaders', iconType: 'sphere' },
+  { title: 'Friend Galaxy', desc: "See your friends' emotional states in an interactive 3D constellation", iconType: 'galaxy' },
+  { title: 'Mood Insights', desc: 'AI-powered weekly reports, trend detection, and emotional compatibility', iconType: 'chart' },
+  { title: 'Real-time Reactions', desc: 'Send hugs, cheers, and high-fives to friends in real-time', iconType: 'heart' },
+  { title: 'Meme Sharing', desc: 'Express yourself with mood memes — send the perfect reaction to friends', iconType: 'chat' },
+  { title: 'Music Sharing', desc: 'Share songs that match your mood with friends', iconType: 'music' },
 ];
 
 const stats = [
@@ -215,7 +231,9 @@ export const Landing = () => {
               transition={{ delay: i * 0.1 }}
               className="group rounded-2xl border border-white/10 bg-white/5 p-5 backdrop-blur-sm transition-colors hover:border-purple-500/20 hover:bg-white/[0.07] sm:p-6"
             >
-              <span className="mb-3 block text-3xl transition-transform group-hover:scale-110">{feature.icon}</span>
+              <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-lg bg-purple-500/10 text-purple-400 transition-transform group-hover:scale-110">
+                <FeatureIcon type={feature.iconType} />
+              </div>
               <h3 className="mb-2 text-base font-semibold text-white sm:text-lg">{feature.title}</h3>
               <p className="text-sm text-gray-400">{feature.desc}</p>
             </motion.div>
