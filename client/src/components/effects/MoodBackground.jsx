@@ -3,6 +3,8 @@ import { SunEffect } from './SunEffect.jsx';
 import { StormEffect } from './StormEffect.jsx';
 import { ParticleEffect } from './ParticleEffect.jsx';
 import { CalmEffect } from './CalmEffect.jsx';
+import { NightEffect } from './NightEffect.jsx';
+import { VortexEffect } from './VortexEffect.jsx';
 
 const BACKGROUND_MAP = {
   happiness: SunEffect,
@@ -10,8 +12,8 @@ const BACKGROUND_MAP = {
   anger: StormEffect,
   calm: CalmEffect,
   excitement: ParticleEffect,
-  anxiety: StormEffect,
-  tired: null,
+  anxiety: VortexEffect,
+  tired: NightEffect,
   hopeful: SunEffect,
 };
 
