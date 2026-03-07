@@ -60,10 +60,10 @@ export const crystalVertexShader = /* glsl */ `
     vNormal = normalize(normalMatrix * normal);
     vWorldNormal = normalize((modelMatrix * vec4(normal, 0.0)).xyz);
 
-    // Crystal faceted displacement — sharp, geometric distortion
+    // Crystal faceted displacement — gentle geometric distortion
     float facet = floor(snoise(position * 3.0) * 6.0) / 6.0;
-    float breathe = sin(uTime * 0.8 + facet * 6.28) * 0.02 * uIntensity;
-    float displacement = facet * 0.08 * uIntensity + breathe;
+    float breathe = sin(uTime * 0.3 + facet * 6.28) * 0.005 * uIntensity;
+    float displacement = facet * 0.02 * uIntensity + breathe;
 
     vFacetNoise = facet;
 

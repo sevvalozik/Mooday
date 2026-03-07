@@ -78,15 +78,14 @@ export const vertexShader = /* glsl */ `
     vUv = uv;
     vNormal = normalize(normalMatrix * normal);
 
-    float speed = 0.3 + uArousal * 0.7;
-    float amplitude = 0.05 + uArousal * 0.25 * uIntensity;
+    float speed = 0.08 + uArousal * 0.12;
+    float amplitude = 0.02 + uArousal * 0.04 * uIntensity;
 
-    // Multi-layered noise for organic look
-    float noise1 = snoise(position * 2.0 + uTime * speed);
-    float noise2 = snoise(position * 4.0 + uTime * speed * 1.5) * 0.5;
-    float noise3 = snoise(position * 8.0 + uTime * speed * 0.5) * 0.25;
+    // Gentle layered noise for smooth organic look
+    float noise1 = snoise(position * 1.5 + uTime * speed);
+    float noise2 = snoise(position * 3.0 + uTime * speed * 0.8) * 0.3;
 
-    float displacement = (noise1 + noise2 + noise3) * amplitude;
+    float displacement = (noise1 + noise2) * amplitude;
     vDisplacement = displacement;
 
     vec3 newPosition = position + normal * displacement;
