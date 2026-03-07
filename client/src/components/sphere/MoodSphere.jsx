@@ -11,8 +11,8 @@ export const MoodSphere = ({ emotion = 'calm', intensity = 5, size = 'large', in
   const sphereSize = size === 'large' ? 1 : size === 'medium' ? 0.6 : 0.35;
   const particleCount = size === 'large' ? 200 : size === 'medium' ? 100 : 50;
 
-  // Adjust bloom per style
-  const bloomIntensity = style === 'wireframe' ? 1.0 : style === 'nebula' ? 0.8 : style === 'crystal' ? 0.5 : 0.8;
+  // Adjust bloom per style — crystal needs much less bloom
+  const bloomIntensity = style === 'wireframe' ? 0.6 : style === 'nebula' ? 0.5 : style === 'crystal' ? 0.15 : 0.5;
 
   return (
     <div className={`${size === 'large' ? 'h-80 w-80' : size === 'medium' ? 'h-48 w-48' : 'h-24 w-24'}`}>

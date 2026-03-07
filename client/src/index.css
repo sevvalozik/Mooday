@@ -22,13 +22,25 @@
 
 * {
   scrollbar-width: thin;
-  scrollbar-color: #374151 transparent;
+  scrollbar-color: var(--color-border) transparent;
 }
 
 body {
   background-color: var(--color-bg);
   color: var(--color-text);
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Override Tailwind's bg-white/X classes to use theme surface colors */
+.min-h-screen {
+  background-color: var(--color-bg);
+}
+
+/* Navbar, Sidebar, MobileNav get themed */
+nav, aside {
+  background-color: var(--color-surface) !important;
+  border-color: var(--color-border) !important;
 }
 
 /* Custom scrollbar for webkit */
@@ -39,7 +51,7 @@ body {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background-color: #374151;
+  background-color: var(--color-border);
   border-radius: 3px;
 }
 

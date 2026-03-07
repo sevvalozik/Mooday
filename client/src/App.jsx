@@ -17,6 +17,7 @@ import { Notifications } from './pages/Notifications.jsx';
 import { Friends } from './pages/Friends.jsx';
 import { useSocket } from './hooks/useSocket.js';
 import { useAuthStore } from './stores/authStore.js';
+import { loadSavedTheme } from './utils/themes.js';
 import api from './services/api.js';
 
 export default function App() {
@@ -25,6 +26,11 @@ export default function App() {
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
   const user = useAuthStore((s) => s.user);
   const setUser = useAuthStore((s) => s.setUser);
+
+  // Load saved theme on app start
+  useEffect(() => {
+    loadSavedTheme();
+  }, []);
 
   // Load user profile on startup if token exists but user is null
   useEffect(() => {

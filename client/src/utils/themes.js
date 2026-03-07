@@ -51,6 +51,17 @@ export const applyTheme = (themeName) => {
   for (const [key, value] of Object.entries(theme)) {
     root.style.setProperty(key, value);
   }
+  localStorage.setItem('theme', themeName);
+};
+
+// Load saved theme on app start
+export const loadSavedTheme = () => {
+  const saved = localStorage.getItem('theme');
+  if (saved && THEMES[saved]) {
+    applyTheme(saved);
+    return saved;
+  }
+  return 'dark';
 };
 
 export const THEME_LIST = [

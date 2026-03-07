@@ -19,7 +19,7 @@ export const Settings = () => {
   const { user, setUser, sphereStyle, setSphereStyle } = useAuthStore();
   const [displayName, setDisplayName] = useState(user?.displayName || '');
   const [bio, setBio] = useState(user?.bio || '');
-  const [theme, setTheme] = useState(user?.preferences?.theme || 'dark');
+  const [theme, setTheme] = useState(localStorage.getItem('theme') || 'dark');
   const [privacy, setPrivacy] = useState(user?.preferences?.privacyLevel || 'friends');
   const [spherePreview, setSpherePreview] = useState('calm');
   const [saving, setSaving] = useState(false);

@@ -48,15 +48,29 @@ const MusicCard = ({ content }) => {
 };
 
 const ImageCard = ({ content }) => {
+  const [failed, setFailed] = useState(false);
   let url = content;
   try { const parsed = JSON.parse(content); url = parsed.url || content; } catch { /* raw URL */ }
+
+  if (failed) {
+    return (
+      <a href={url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 rounded-lg bg-white/5 px-3 py-2 text-sm text-purple-400 hover:text-purple-300 transition-colors">
+        <span>📷</span>
+        <span className="truncate underline">{url}</span>
+        <span className="text-xs text-gray-500">↗</span>
+      </a>
+    );
+  }
+
   return (
-    <img
-      src={url}
-      alt="shared"
-      className="max-h-60 w-full rounded-lg object-cover"
-      onError={(e) => { e.target.style.display = 'none'; }}
-    />
+    <a href={url} target="_blank" rel="noopener noreferrer">
+      <img
+        src={url}
+        alt="shared"
+        className="max-h-60 w-full rounded-lg object-cover"
+        onError={() => setFailed(true)}
+      />
+    </a>
   );
 };
 

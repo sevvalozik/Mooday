@@ -89,39 +89,34 @@ export const crystalFragmentShader = /* glsl */ `
   varying float vFacetNoise;
 
   void main() {
-    // Crystal refraction — sharp color shifts per facet
     vec3 viewDir = normalize(cameraPosition - vPosition);
-    float fresnel = pow(1.0 - max(dot(viewDir, vNormal), 0.0), 4.0);
+    float fresnel = pow(1.0 - max(dot(viewDir, vNormal), 0.0), 2.5);
 
-    // Rainbow refraction based on facet angle
+    // Subtle color shift per facet
     float refractAngle = dot(vWorldNormal, vec3(0.0, 1.0, 0.0));
-    vec3 rainbow = vec3(
-      0.5 + 0.5 * sin(refractAngle * 6.28 + uTime * 0.5),
-      0.5 + 0.5 * sin(refractAngle * 6.28 + uTime * 0.5 + 2.094),
-      0.5 + 0.5 * sin(refractAngle * 6.28 + uTime * 0.5 + 4.189)
+    vec3 tint = vec3(
+      0.5 + 0.5 * sin(refractAngle * 4.0 + uTime * 0.3),
+      0.5 + 0.5 * sin(refractAngle * 4.0 + uTime * 0.3 + 2.094),
+      0.5 + 0.5 * sin(refractAngle * 4.0 + uTime * 0.3 + 4.189)
     );
 
-    // Base crystal color from emotion
+    // Base crystal color — strong emotion color
     vec3 baseColor = mix(uColorA, uColorB, vFacetNoise * 0.5 + 0.5);
 
-    // Blend rainbow refraction with base color
-    vec3 color = mix(baseColor, rainbow, fresnel * 0.4);
+    // Mix just a hint of rainbow refraction at edges
+    vec3 color = mix(baseColor, tint, fresnel * 0.2);
 
-    // Internal glow
-    color += uColorA * fresnel * 0.8 * uIntensity;
+    // Gentle edge glow
+    color += uColorA * fresnel * 0.15;
 
-    // Facet edge highlights — sharp specular
-    float specular = pow(max(dot(reflect(-viewDir, vNormal), vec3(0.5, 1.0, 0.3)), 0.0), 64.0);
-    color += vec3(1.0) * specular * 0.6;
+    // Subtle specular highlight
+    float specular = pow(max(dot(reflect(-viewDir, vNormal), vec3(0.5, 1.0, 0.3)), 0.0), 32.0);
+    color += vec3(1.0) * specular * 0.12;
 
-    // Sparkling points
-    float sparkle = pow(max(sin(vFacetNoise * 50.0 + uTime * 3.0), 0.0), 20.0);
-    color += vec3(1.0, 0.95, 0.9) * sparkle * 0.3 * uIntensity;
+    // Glass transparency
+    float alpha = 0.8 + fresnel * 0.2;
 
-    // Glass transparency effect
-    float alpha = 0.75 + fresnel * 0.25;
-
-    float brightness = 0.9 + uValence * 0.1;
+    float brightness = 0.75 + uValence * 0.15;
     color *= brightness;
 
     gl_FragColor = vec4(color, alpha);
