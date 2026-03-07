@@ -47,6 +47,19 @@ const MusicCard = ({ content }) => {
   );
 };
 
+const ImageCard = ({ content }) => {
+  let url = content;
+  try { const parsed = JSON.parse(content); url = parsed.url || content; } catch { /* raw URL */ }
+  return (
+    <img
+      src={url}
+      alt="shared"
+      className="max-h-60 w-full rounded-lg object-cover"
+      onError={(e) => { e.target.style.display = 'none'; }}
+    />
+  );
+};
+
 const SongShareModal = ({ onSend, onClose }) => {
   const [songTitle, setSongTitle] = useState('');
   const [artistName, setArtistName] = useState('');
@@ -91,6 +104,53 @@ const SongShareModal = ({ onSend, onClose }) => {
   );
 };
 
+const ImageShareModal = ({ onSend, onClose }) => {
+  const [imageUrl, setImageUrl] = useState('');
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (!imageUrl.trim()) return;
+    onSend(imageUrl.trim());
+  };
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: 10 }}
+      className="absolute bottom-full left-0 right-0 mb-2 rounded-xl border border-white/10 bg-gray-900 p-4 shadow-xl"
+    >
+      <div className="mb-3 flex items-center justify-between">
+        <h3 className="text-sm font-semibold text-white">Share a Photo</h3>
+        <button onClick={onClose} className="text-gray-400 hover:text-white">&times;</button>
+      </div>
+      <form onSubmit={handleSubmit} className="flex flex-col gap-2">
+        <input
+          value={imageUrl}
+          onChange={(e) => setImageUrl(e.target.value)}
+          placeholder="Paste image URL..."
+          className="rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-white placeholder-gray-500 outline-none focus:border-purple-500"
+        />
+        {imageUrl.trim() && (
+          <img
+            src={imageUrl}
+            alt="preview"
+            className="max-h-40 rounded-lg object-cover"
+            onError={(e) => { e.target.style.display = 'none'; }}
+          />
+        )}
+        <button
+          type="submit"
+          disabled={!imageUrl.trim()}
+          className="rounded-lg bg-purple-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-purple-500 disabled:opacity-40"
+        >
+          Send Photo
+        </button>
+      </form>
+    </motion.div>
+  );
+};
+
 export const Messages = () => {
   const { friendId } = useParams();
   const navigate = useNavigate();
@@ -101,8 +161,15 @@ export const Messages = () => {
   const [sending, setSending] = useState(false);
   const [showMemes, setShowMemes] = useState(false);
   const [showMusic, setShowMusic] = useState(false);
+  const [showImage, setShowImage] = useState(false);
   const messagesEndRef = useRef(null);
   const socket = useSocketStore((s) => s.socket);
+
+  const closeAllModals = () => {
+    setShowMemes(false);
+    setShowMusic(false);
+    setShowImage(false);
+  };
 
   useEffect(() => {
     friendService.getFriends().then(setFriends).catch(() => {});
@@ -114,8 +181,7 @@ export const Messages = () => {
         setMessages(data.messages || []);
       }).catch(() => {});
     }
-    setShowMemes(false);
-    setShowMusic(false);
+    closeAllModals();
   }, [friendId]);
 
   // Listen for real-time incoming messages via socket
@@ -123,10 +189,8 @@ export const Messages = () => {
     if (!socket) return;
 
     const handleIncoming = (message) => {
-      // Only add to chat if the message is from the friend we're currently chatting with
       if (message.senderId === friendId) {
         setMessages((prev) => {
-          // Avoid duplicates
           if (prev.some((m) => m.id === message.id)) return prev;
           return [...prev, message];
         });
@@ -162,7 +226,7 @@ export const Messages = () => {
 
   const handleSendMeme = async (meme) => {
     if (!friendId) return;
-    setShowMemes(false);
+    closeAllModals();
     setSending(true);
     try {
       const msg = await messageService.sendMessage({
@@ -180,11 +244,10 @@ export const Messages = () => {
 
   const handleSendSong = async (songData) => {
     if (!friendId) return;
-    setShowMusic(false);
+    closeAllModals();
     setSending(true);
     try {
-      const song = await musicService.shareSong({ receiverId: friendId, ...songData });
-      // Add as a message-like entry in chat
+      await musicService.shareSong({ receiverId: friendId, ...songData }).catch(() => {});
       const msg = await messageService.sendMessage({
         receiverId: friendId,
         content: JSON.stringify({ songTitle: songData.songTitle, artistName: songData.artistName, songUrl: songData.songUrl, platform: songData.platform, note: songData.note }),
@@ -198,13 +261,30 @@ export const Messages = () => {
     }
   };
 
-  // Mobile: show friend list when no chat is selected
+  const handleSendImage = async (imageUrl) => {
+    if (!friendId) return;
+    closeAllModals();
+    setSending(true);
+    try {
+      const msg = await messageService.sendMessage({
+        receiverId: friendId,
+        content: JSON.stringify({ url: imageUrl }),
+        msgType: 'image',
+      });
+      setMessages((prev) => [...prev, msg]);
+    } catch {
+      // silently fail
+    } finally {
+      setSending(false);
+    }
+  };
+
   const showMobileFriendList = !friendId;
 
   return (
     <PageWrapper>
       <div className="flex h-[calc(100vh-8rem)] gap-4 md:h-[calc(100vh-8rem)]">
-        {/* Friend List — desktop sidebar / mobile full view */}
+        {/* Friend List */}
         <div className={`${
           showMobileFriendList ? 'flex' : 'hidden md:flex'
         } w-full flex-col gap-1 overflow-y-auto rounded-xl border border-white/10 bg-white/5 p-3 md:w-64`}>
@@ -253,14 +333,16 @@ export const Messages = () => {
               <div className="flex-1 overflow-y-auto p-3 sm:p-4">
                 <div className="flex flex-col gap-3">
                   {messages.map((msg) => {
-                    const isOwn = msg.senderId === user?.id;
+                    // Compare with friendId — works even if user object not loaded yet
+                    const isOwn = msg.senderId !== friendId;
                     const isMeme = msg.msgType === 'meme';
                     const isMusic = msg.msgType === 'music';
-                    const isSpecial = isMeme || isMusic;
+                    const isImage = msg.msgType === 'image';
+                    const isSpecial = isMeme || isMusic || isImage;
 
                     return (
                       <div key={msg.id} className={`flex ${isOwn ? 'justify-end' : 'justify-start'}`}>
-                        {/* Friend avatar for non-own messages */}
+                        {/* Friend avatar — only on friend's messages */}
                         {!isOwn && (
                           <div className="mr-2 mt-auto flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-pink-600/50 text-[10px] font-bold text-white">
                             {msg.sender?.displayName?.charAt(0) || '?'}
@@ -268,21 +350,21 @@ export const Messages = () => {
                         )}
                         <div className={`max-w-[75%] sm:max-w-[65%] ${
                           isSpecial
-                            ? 'rounded-2xl p-1'
-                            : `px-3.5 py-2.5 text-sm ${
-                                isOwn
-                                  ? 'rounded-2xl rounded-br-md bg-purple-600 text-white'
-                                  : 'rounded-2xl rounded-bl-md bg-white/10 text-gray-100'
-                              }`
+                            ? 'overflow-hidden rounded-2xl'
+                            : isOwn
+                              ? 'rounded-2xl rounded-br-md bg-purple-600 px-3.5 py-2.5 text-sm text-white'
+                              : 'rounded-2xl rounded-bl-md bg-white/10 px-3.5 py-2.5 text-sm text-gray-100'
                         }`}>
                           {isMeme ? (
                             <MemeCard content={msg.content} />
                           ) : isMusic ? (
                             <MusicCard content={msg.content} />
+                          ) : isImage ? (
+                            <ImageCard content={msg.content} />
                           ) : (
                             <p>{msg.content}</p>
                           )}
-                          <p className={`mt-1 text-[10px] ${isOwn ? 'text-right text-white/50' : 'text-left text-gray-500'} ${isSpecial ? 'text-center text-gray-400' : ''}`}>
+                          <p className={`mt-1 text-[10px] ${isSpecial ? 'px-2 pb-1 text-gray-500' : ''} ${isOwn ? 'text-right text-white/50' : 'text-left text-gray-500'}`}>
                             {new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                           </p>
                         </div>
@@ -308,12 +390,18 @@ export const Messages = () => {
                       onClose={() => setShowMusic(false)}
                     />
                   )}
+                  {showImage && (
+                    <ImageShareModal
+                      onSend={handleSendImage}
+                      onClose={() => setShowImage(false)}
+                    />
+                  )}
                 </AnimatePresence>
 
                 <form onSubmit={handleSend} className="flex gap-2">
                   <button
                     type="button"
-                    onClick={() => { setShowMemes((v) => !v); setShowMusic(false); }}
+                    onClick={() => { closeAllModals(); setShowMemes((v) => !v); }}
                     className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-lg transition-colors ${
                       showMemes ? 'bg-purple-600 text-white' : 'bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white'
                     }`}
@@ -323,13 +411,23 @@ export const Messages = () => {
                   </button>
                   <button
                     type="button"
-                    onClick={() => { setShowMusic((v) => !v); setShowMemes(false); }}
+                    onClick={() => { closeAllModals(); setShowMusic((v) => !v); }}
                     className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-lg transition-colors ${
                       showMusic ? 'bg-purple-600 text-white' : 'bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white'
                     }`}
                     title="Share a song"
                   >
                     <span className="text-lg">🎵</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => { closeAllModals(); setShowImage((v) => !v); }}
+                    className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-lg transition-colors ${
+                      showImage ? 'bg-purple-600 text-white' : 'bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white'
+                    }`}
+                    title="Share a photo"
+                  >
+                    <span className="text-lg">📷</span>
                   </button>
                   <input
                     value={newMessage}

@@ -11,27 +11,39 @@ import { useAuthStore } from '../stores/authStore.js';
 import * as moodService from '../services/moodService.js';
 import * as friendService from '../services/friendService.js';
 import * as insightService from '../services/insightService.js';
+import * as reactionService from '../services/reactionService.js';
+
+const REACTION_EMOJI = {
+  hug: '🤗',
+  cheer: '🎉',
+  'high-five': '🙌',
+  heart: '❤️',
+  laugh: '😂',
+};
 
 export const Dashboard = () => {
   const { currentMood, streak, setCurrentMood, setStreak } = useMoodStore();
   const { friends, setFriends } = useFriendStore();
   const user = useAuthStore((s) => s.user);
   const [insights, setInsights] = useState(null);
+  const [reactions, setReactions] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const loadData = async () => {
       try {
-        const [mood, streakData, friendsData, insightsData] = await Promise.all([
+        const [mood, streakData, friendsData, insightsData, reactionsData] = await Promise.all([
           moodService.getCurrentMood(),
           moodService.getStreak(),
           friendService.getFriends(),
           insightService.getWeeklyInsights().catch(() => null),
+          reactionService.getReceivedReactions(10).catch(() => []),
         ]);
         setCurrentMood(mood);
         setStreak(streakData);
         setFriends(friendsData);
         setInsights(insightsData);
+        setReactions(reactionsData || []);
       } catch (err) {
         console.error('Dashboard load error:', err);
       } finally {
@@ -83,6 +95,42 @@ export const Dashboard = () => {
           <h2 className="mb-3 text-lg font-semibold text-white">Your Galaxy</h2>
           <FriendGalaxy friends={friends} userMood={currentMood} />
         </motion.div>
+
+        {/* Received Reactions */}
+        {reactions.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+            className="rounded-2xl border border-white/10 bg-white/5 p-4 backdrop-blur-sm"
+          >
+            <h2 className="mb-3 text-lg font-semibold text-white">Reactions from Friends</h2>
+            <div className="flex flex-col gap-2">
+              {reactions.map((r) => (
+                <div
+                  key={r.id}
+                  className="flex items-center gap-3 rounded-xl bg-white/5 px-4 py-3"
+                >
+                  <div className="flex h-9 w-9 items-center justify-center rounded-full bg-purple-600/30 text-xs font-bold text-white">
+                    {r.sender?.displayName?.charAt(0) || '?'}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm text-white">
+                      <span className="font-semibold">{r.sender?.displayName}</span>
+                      {' '}sent you a {r.type}
+                    </p>
+                    <p className="text-xs text-gray-500">
+                      {new Date(r.createdAt).toLocaleDateString('en-US', {
+                        month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit',
+                      })}
+                    </p>
+                  </div>
+                  <span className="text-2xl">{REACTION_EMOJI[r.type] || r.emoji || '💜'}</span>
+                </div>
+              ))}
+            </div>
+          </motion.div>
+        )}
 
         {/* Weekly Insights Card */}
         {insights && (
