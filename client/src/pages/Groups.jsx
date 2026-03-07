@@ -7,6 +7,8 @@ import { Input } from '../components/ui/Input.jsx';
 import { CardSkeleton } from '../components/ui/Skeleton.jsx';
 import { EMOTIONS } from '../utils/emotionConfig.js';
 import * as groupService from '../services/groupService.js';
+import * as friendService from '../services/friendService.js';
+import { useFriendStore } from '../stores/friendStore.js';
 import { toast } from '../components/ui/Toast.jsx';
 
 export const Groups = () => {
@@ -15,13 +17,30 @@ export const Groups = () => {
   const [showCreate, setShowCreate] = useState(false);
   const [newGroupName, setNewGroupName] = useState('');
   const [selectedGroup, setSelectedGroup] = useState(null);
+  const { friends, setFriends } = useFriendStore();
 
   useEffect(() => {
-    groupService.getGroups()
-      .then(setGroups)
-      .catch(() => {})
+    Promise.all([
+      groupService.getGroups(),
+      friendService.getFriends(),
+    ]).then(([g, f]) => {
+      setGroups(g);
+      setFriends(f);
+    }).catch(() => {})
       .finally(() => setLoading(false));
   }, []);
+
+  const handleAddMember = async (groupId, userId) => {
+    try {
+      await groupService.addMember(groupId, userId);
+      const updated = await groupService.getGroup(groupId);
+      setSelectedGroup(updated);
+      setGroups((prev) => prev.map((g) => g.id === groupId ? updated : g));
+      toast('Member added!', 'success');
+    } catch (err) {
+      toast(err.response?.data?.error?.message || 'Failed to add member', 'error');
+    }
+  };
 
   const handleCreate = async () => {
     if (!newGroupName.trim()) return;
@@ -115,7 +134,7 @@ export const Groups = () => {
           onClose={() => setSelectedGroup(null)}
           title={selectedGroup?.name}
         >
-          <div className="flex flex-col gap-3">
+          <div className="flex flex-col gap-4">
             <p className="text-sm text-gray-400">Members</p>
             {selectedGroup?.members?.map((member) => {
               const emotion = member.user?.moodLogs?.[0]?.emotion || 'calm';
@@ -131,6 +150,35 @@ export const Groups = () => {
                 </div>
               );
             })}
+
+            {/* Add friend to group */}
+            {friends.length > 0 && (
+              <>
+                <hr className="border-white/10" />
+                <p className="text-sm text-gray-400">Add Friends</p>
+                {friends
+                  .filter((f) => !selectedGroup?.members?.some((m) => m.user?.id === f.id))
+                  .map((friend) => (
+                    <div key={friend.id} className="flex items-center justify-between rounded-lg bg-white/5 px-3 py-2">
+                      <div className="flex items-center gap-3">
+                        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-purple-600/30 text-xs font-bold text-purple-300">
+                          {friend.displayName?.[0]?.toUpperCase() || '?'}
+                        </div>
+                        <span className="text-sm text-white">{friend.displayName}</span>
+                      </div>
+                      <button
+                        onClick={() => handleAddMember(selectedGroup.id, friend.id)}
+                        className="rounded-lg bg-purple-600 px-3 py-1 text-xs font-medium text-white hover:bg-purple-500"
+                      >
+                        Add
+                      </button>
+                    </div>
+                  ))}
+                {friends.filter((f) => !selectedGroup?.members?.some((m) => m.user?.id === f.id)).length === 0 && (
+                  <p className="text-center text-xs text-gray-500">All friends are already in this group</p>
+                )}
+              </>
+            )}
           </div>
         </Modal>
       </div>
