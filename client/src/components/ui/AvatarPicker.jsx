@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { AvatarRenderer } from './AvatarRenderer.jsx';
 import {
-  SKIN_TONES, HAIR_STYLES, HAIR_COLORS,
+  SKIN_TONES, FEMALE_HAIR_STYLES, MALE_HAIR_STYLES, HAIR_COLORS,
   EYE_STYLES, MOUTH_STYLES, ACCESSORIES, BG_COLORS,
   DEFAULT_AVATAR,
 } from '../../utils/avatars.js';
@@ -43,10 +43,18 @@ const OptionButton = ({ label, selected, onClick, preview }) => (
 export const AvatarPicker = ({ config, onChange, compact = false }) => {
   const [activeTab, setActiveTab] = useState('bg');
   const avatarConfig = config || DEFAULT_AVATAR;
+  const gender = avatarConfig.gender || 'female';
 
   const update = (field, value) => {
     onChange({ ...avatarConfig, [field]: value });
   };
+
+  const handleGenderChange = (newGender) => {
+    const defaultHair = newGender === 'female' ? 'f-long' : 'm-straight';
+    onChange({ ...avatarConfig, gender: newGender, hair: defaultHair });
+  };
+
+  const hairStyles = gender === 'female' ? FEMALE_HAIR_STYLES : MALE_HAIR_STYLES;
 
   return (
     <div className="flex flex-col items-center gap-4">
@@ -59,6 +67,30 @@ export const AvatarPicker = ({ config, onChange, compact = false }) => {
       >
         <AvatarRenderer config={avatarConfig} size={compact ? 80 : 120} />
       </motion.div>
+
+      {/* Gender Toggle */}
+      <div className="flex items-center gap-2 rounded-xl bg-white/5 p-1">
+        <button
+          onClick={() => handleGenderChange('female')}
+          className={`flex items-center gap-1.5 rounded-lg px-4 py-2 text-sm font-medium transition-all ${
+            gender === 'female'
+              ? 'bg-pink-600 text-white shadow-lg'
+              : 'text-gray-400 hover:text-white'
+          }`}
+        >
+          <span>👩</span> Kız
+        </button>
+        <button
+          onClick={() => handleGenderChange('male')}
+          className={`flex items-center gap-1.5 rounded-lg px-4 py-2 text-sm font-medium transition-all ${
+            gender === 'male'
+              ? 'bg-blue-600 text-white shadow-lg'
+              : 'text-gray-400 hover:text-white'
+          }`}
+        >
+          <span>👦</span> Erkek
+        </button>
+      </div>
 
       {/* Category Tabs */}
       <div className="flex flex-wrap justify-center gap-1">
@@ -81,7 +113,7 @@ export const AvatarPicker = ({ config, onChange, compact = false }) => {
       {/* Options Panel */}
       <AnimatePresence mode="wait">
         <motion.div
-          key={activeTab}
+          key={activeTab + gender}
           initial={{ opacity: 0, y: 5 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -5 }}
@@ -122,7 +154,7 @@ export const AvatarPicker = ({ config, onChange, compact = false }) => {
               <div>
                 <p className="mb-1.5 text-center text-[10px] font-medium uppercase tracking-wider text-gray-500">Style</p>
                 <div className="flex flex-wrap justify-center gap-1.5">
-                  {HAIR_STYLES.map((h) => (
+                  {hairStyles.map((h) => (
                     <OptionButton
                       key={h.key}
                       label={h.label}
@@ -132,7 +164,7 @@ export const AvatarPicker = ({ config, onChange, compact = false }) => {
                   ))}
                 </div>
               </div>
-              {avatarConfig.hair !== 'none' && (
+              {avatarConfig.hair !== 'm-bald' && (
                 <div>
                   <p className="mb-1.5 text-center text-[10px] font-medium uppercase tracking-wider text-gray-500">Color</p>
                   <div className="flex flex-wrap justify-center gap-2">

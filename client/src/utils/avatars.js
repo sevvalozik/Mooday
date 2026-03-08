@@ -9,15 +9,17 @@ export const SKIN_TONES = [
   { key: 'deep', color: '#5C3317', label: 'Deep' },
 ];
 
-export const HAIR_STYLES = [
-  { key: 'none', label: 'None' },
-  { key: 'short', label: 'Short' },
-  { key: 'long', label: 'Long' },
-  { key: 'curly', label: 'Curly' },
-  { key: 'spiky', label: 'Spiky' },
-  { key: 'bob', label: 'Bob' },
-  { key: 'bun', label: 'Bun' },
-  { key: 'buzz', label: 'Buzz' },
+export const FEMALE_HAIR_STYLES = [
+  { key: 'f-short', label: 'Kısa' },
+  { key: 'f-bob', label: 'Küt' },
+  { key: 'f-long', label: 'Uzun' },
+  { key: 'f-bun', label: 'Toplu' },
+];
+
+export const MALE_HAIR_STYLES = [
+  { key: 'm-straight', label: 'Düz' },
+  { key: 'm-curly', label: 'Kıvırcık' },
+  { key: 'm-bald', label: 'Kel' },
 ];
 
 export const HAIR_COLORS = [
@@ -67,9 +69,10 @@ export const BG_COLORS = [
 ];
 
 export const DEFAULT_AVATAR = {
+  gender: 'female',
   bg: 'purple',
   skin: 'light-med',
-  hair: 'short',
+  hair: 'f-long',
   hairColor: 'dark-brown',
   eyes: 'normal',
   mouth: 'smile',
