@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { useAuthStore } from '../stores/authStore.js';
 import * as authService from '../services/authService.js';
 import { Input } from '../components/ui/Input.jsx';
@@ -42,11 +42,11 @@ export const Register = () => {
         password: form.password,
       });
       login(data.user, data.accessToken, data.refreshToken);
+      setLoading(false);
       setStep(2);
     } catch (err) {
-      setError(err.response?.data?.error?.message || 'Registration failed');
-    } finally {
       setLoading(false);
+      setError(err.response?.data?.error?.message || 'Registration failed');
     }
   };
 
@@ -89,68 +89,64 @@ export const Register = () => {
           }`}>2</div>
         </div>
 
-        <AnimatePresence mode="wait">
-          {step === 1 && (
-            <motion.div
-              key="step1"
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -20 }}
-            >
-              <p className="mb-4 text-center text-gray-400">Create your account</p>
-              <form onSubmit={handleSubmit} className="flex flex-col gap-4 rounded-2xl border border-white/10 bg-white/5 p-8 backdrop-blur-sm">
-                {error && (
-                  <div className="rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-2 text-sm text-red-400">
-                    {error}
-                  </div>
-                )}
-
-                <Input label="Email" type="email" placeholder="you@example.com" value={form.email} onChange={handleChange('email')} required />
-                <Input label="Username" placeholder="cooluser" value={form.username} onChange={handleChange('username')} required />
-                <Input label="Display Name" placeholder="Your Name" value={form.displayName} onChange={handleChange('displayName')} required />
-                <Input label="Password" type="password" placeholder="Min 6 characters" value={form.password} onChange={handleChange('password')} required />
-                <Input label="Confirm Password" type="password" placeholder="Repeat password" value={form.confirmPassword} onChange={handleChange('confirmPassword')} required />
-
-                <Button type="submit" loading={loading} className="mt-2 w-full">
-                  Next
-                </Button>
-
-                <p className="text-center text-sm text-gray-400">
-                  Already have an account?{' '}
-                  <Link to="/login" className="text-purple-400 hover:text-purple-300">
-                    Login
-                  </Link>
-                </p>
-              </form>
-            </motion.div>
-          )}
-
-          {step === 2 && (
-            <motion.div
-              key="step2"
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: 20 }}
-            >
-              <p className="mb-4 text-center text-gray-400">Design your avatar</p>
-              <div className="flex flex-col gap-5 rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur-sm">
-                <AvatarPicker config={avatarConfig} onChange={setAvatarConfig} />
-
-                <div className="flex gap-3">
-                  <button
-                    onClick={handleSkip}
-                    className="flex-1 rounded-xl border border-white/10 px-4 py-3 text-sm font-medium text-gray-400 transition-colors hover:bg-white/5 hover:text-white"
-                  >
-                    Skip
-                  </button>
-                  <Button onClick={handleSaveAvatar} loading={savingAvatar} className="flex-1">
-                    Done
-                  </Button>
+        {/* Step 1: Account Info */}
+        {step === 1 && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+          >
+            <p className="mb-4 text-center text-gray-400">Create your account</p>
+            <form onSubmit={handleSubmit} className="flex flex-col gap-4 rounded-2xl border border-white/10 bg-white/5 p-8 backdrop-blur-sm">
+              {error && (
+                <div className="rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-2 text-sm text-red-400">
+                  {error}
                 </div>
+              )}
+
+              <Input label="Email" type="email" placeholder="you@example.com" value={form.email} onChange={handleChange('email')} required />
+              <Input label="Username" placeholder="cooluser" value={form.username} onChange={handleChange('username')} required />
+              <Input label="Display Name" placeholder="Your Name" value={form.displayName} onChange={handleChange('displayName')} required />
+              <Input label="Password" type="password" placeholder="Min 6 characters" value={form.password} onChange={handleChange('password')} required />
+              <Input label="Confirm Password" type="password" placeholder="Repeat password" value={form.confirmPassword} onChange={handleChange('confirmPassword')} required />
+
+              <Button type="submit" loading={loading} className="mt-2 w-full">
+                Next
+              </Button>
+
+              <p className="text-center text-sm text-gray-400">
+                Already have an account?{' '}
+                <Link to="/login" className="text-purple-400 hover:text-purple-300">
+                  Login
+                </Link>
+              </p>
+            </form>
+          </motion.div>
+        )}
+
+        {/* Step 2: Avatar Creator */}
+        {step === 2 && (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+          >
+            <p className="mb-4 text-center text-gray-400">Design your avatar</p>
+            <div className="flex flex-col gap-5 rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur-sm">
+              <AvatarPicker config={avatarConfig} onChange={setAvatarConfig} />
+
+              <div className="flex gap-3">
+                <button
+                  onClick={handleSkip}
+                  className="flex-1 rounded-xl border border-white/10 px-4 py-3 text-sm font-medium text-gray-400 transition-colors hover:bg-white/5 hover:text-white"
+                >
+                  Skip
+                </button>
+                <Button onClick={handleSaveAvatar} loading={savingAvatar} className="flex-1">
+                  Done
+                </Button>
               </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+            </div>
+          </motion.div>
+        )}
       </div>
     </div>
   );
