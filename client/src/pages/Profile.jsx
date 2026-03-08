@@ -4,6 +4,7 @@ import { PageWrapper } from '../components/layout/PageWrapper.jsx';
 import { MoodSphere } from '../components/sphere/MoodSphere.jsx';
 import { StreakBadge } from '../components/ui/StreakBadge.jsx';
 import { ProfileSkeleton } from '../components/ui/Skeleton.jsx';
+import { UserAvatar } from '../components/ui/UserAvatar.jsx';
 import { useAuthStore } from '../stores/authStore.js';
 import { useMoodStore } from '../stores/moodStore.js';
 import { EMOTIONS } from '../utils/emotionConfig.js';
@@ -51,9 +52,7 @@ export const Profile = () => {
       <div className="flex flex-col items-center gap-6">
         {/* User Info */}
         <div className="text-center">
-          <div className="mb-2 flex h-16 w-16 mx-auto items-center justify-center rounded-full bg-purple-600 text-2xl font-bold text-white">
-            {user?.displayName?.charAt(0) || '?'}
-          </div>
+          <UserAvatar user={user} size="xl" className="mx-auto mb-2" />
           <h1 className="text-2xl font-bold text-white">{user?.displayName}</h1>
           <p className="text-gray-400">@{user?.username}</p>
           {user?.bio && <p className="mt-1 text-sm text-gray-500">{user.bio}</p>}

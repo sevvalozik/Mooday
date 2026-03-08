@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { PageWrapper } from '../components/layout/PageWrapper.jsx';
 import { useFriendStore } from '../stores/friendStore.js';
+import { UserAvatar } from '../components/ui/UserAvatar.jsx';
 import * as friendService from '../services/friendService.js';
 import { EMOTIONS } from '../utils/emotionConfig.js';
 
@@ -124,9 +125,7 @@ export const Friends = () => {
               {searchResults.map((user) => (
                 <div key={user.id} className="flex items-center justify-between rounded-lg bg-white/5 px-4 py-3">
                   <div className="flex items-center gap-3">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-purple-600/30 text-sm font-bold text-purple-300">
-                      {user.displayName?.[0]?.toUpperCase() || '?'}
-                    </div>
+                    <UserAvatar user={user} size="md" />
                     <div>
                       <p className="font-medium text-white">{user.displayName}</p>
                       <p className="text-sm text-gray-400">@{user.username}</p>
@@ -181,12 +180,7 @@ export const Friends = () => {
                   to={`/friends/${friend.id}`}
                   className="flex items-center gap-4 rounded-xl border border-white/10 bg-white/5 px-4 py-3 transition-colors hover:bg-white/10"
                 >
-                  <div
-                    className="flex h-12 w-12 items-center justify-center rounded-full text-lg font-bold"
-                    style={{ backgroundColor: getMoodColor(friend.latestMood) + '30', color: getMoodColor(friend.latestMood) }}
-                  >
-                    {friend.displayName?.[0]?.toUpperCase() || '?'}
-                  </div>
+                  <UserAvatar user={friend} size="lg" />
                   <div className="flex-1">
                     <p className="font-medium text-white">{friend.displayName}</p>
                     <p className="text-sm text-gray-400">@{friend.username}</p>
@@ -209,9 +203,7 @@ export const Friends = () => {
               pendingRequests.map((req) => (
                 <div key={req.friendshipId} className="flex items-center justify-between rounded-xl border border-white/10 bg-white/5 px-4 py-3">
                   <div className="flex items-center gap-3">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-purple-600/30 text-sm font-bold text-purple-300">
-                      {req.sender.displayName?.[0]?.toUpperCase() || '?'}
-                    </div>
+                    <UserAvatar user={req.sender} size="md" />
                     <div>
                       <p className="font-medium text-white">{req.sender.displayName}</p>
                       <p className="text-sm text-gray-400">@{req.sender.username}</p>

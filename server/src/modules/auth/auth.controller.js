@@ -36,3 +36,12 @@ export const getMe = async (req, res) => {
     data,
   });
 };
+
+export const updateMe = async (req, res) => {
+  const data = await authService.updateProfile(req.user.userId, req.validatedBody);
+
+  res.json({
+    success: true,
+    data,
+  });
+};

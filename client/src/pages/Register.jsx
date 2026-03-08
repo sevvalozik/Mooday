@@ -34,7 +34,7 @@ export const Register = () => {
         password: form.password,
       });
       login(data.user, data.accessToken, data.refreshToken);
-      navigate('/dashboard');
+      navigate('/avatar-setup');
     } catch (err) {
       setError(err.response?.data?.error?.message || 'Registration failed');
     } finally {

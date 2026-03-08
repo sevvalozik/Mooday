@@ -3,6 +3,8 @@ import { PageWrapper } from '../components/layout/PageWrapper.jsx';
 import { Input } from '../components/ui/Input.jsx';
 import { Button } from '../components/ui/Button.jsx';
 import { MoodSphere } from '../components/sphere/MoodSphere.jsx';
+import { AvatarPicker } from '../components/ui/AvatarPicker.jsx';
+import { UserAvatar } from '../components/ui/UserAvatar.jsx';
 import { useAuthStore } from '../stores/authStore.js';
 import { THEME_LIST, applyTheme } from '../utils/themes.js';
 import { toast } from '../components/ui/Toast.jsx';
@@ -19,6 +21,7 @@ export const Settings = () => {
   const { user, setUser, sphereStyle, setSphereStyle } = useAuthStore();
   const [displayName, setDisplayName] = useState(user?.displayName || '');
   const [bio, setBio] = useState(user?.bio || '');
+  const [avatarKey, setAvatarKey] = useState(user?.avatarUrl || null);
   const [theme, setTheme] = useState(localStorage.getItem('theme') || 'dark');
   const [privacy, setPrivacy] = useState(user?.preferences?.privacyLevel || 'friends');
   const [spherePreview, setSpherePreview] = useState('calm');
@@ -27,7 +30,8 @@ export const Settings = () => {
   const handleSave = async () => {
     setSaving(true);
     try {
-      const { data } = await api.patch(`/auth/me`, { displayName, bio });
+      const { data } = await api.patch(`/auth/me`, { displayName, bio, avatarUrl: avatarKey || undefined });
+      setUser({ ...user, displayName, bio, avatarUrl: avatarKey });
       toast('Settings saved!', 'success');
     } catch {
       toast('Failed to save settings', 'error');
@@ -51,6 +55,11 @@ export const Settings = () => {
           <section className="rounded-xl border border-white/10 bg-white/5 p-6">
             <h2 className="mb-4 text-lg font-semibold text-white">Profile</h2>
             <div className="flex flex-col gap-4">
+              {/* Avatar */}
+              <div>
+                <label className="mb-2 block text-sm font-medium text-gray-300">Avatar</label>
+                <AvatarPicker selected={avatarKey} onSelect={setAvatarKey} compact />
+              </div>
               <Input label="Display Name" value={displayName} onChange={(e) => setDisplayName(e.target.value)} />
               <div>
                 <label className="mb-1.5 block text-sm font-medium text-gray-300">Bio</label>

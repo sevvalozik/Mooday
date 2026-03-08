@@ -1,6 +1,7 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../../stores/authStore.js';
 import { useNotificationStore } from '../../stores/notificationStore.js';
+import { UserAvatar } from '../ui/UserAvatar.jsx';
 
 export const Navbar = () => {
   const { user, isAuthenticated, logout } = useAuthStore();
@@ -37,8 +38,8 @@ export const Navbar = () => {
                 </span>
               )}
             </Link>
-            <Link to="/profile" className="flex h-8 w-8 items-center justify-center rounded-full bg-purple-600 text-sm font-medium text-white">
-              {user?.displayName?.charAt(0) || '?'}
+            <Link to="/profile">
+              <UserAvatar user={user} size="xs" />
             </Link>
             <button onClick={handleLogout} className="hidden text-sm text-gray-400 transition-colors hover:text-white sm:block">
               Logout

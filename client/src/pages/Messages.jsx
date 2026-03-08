@@ -4,6 +4,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { PageWrapper } from '../components/layout/PageWrapper.jsx';
 import { Button } from '../components/ui/Button.jsx';
 import { MemePicker } from '../components/ui/MemePicker.jsx';
+import { UserAvatar } from '../components/ui/UserAvatar.jsx';
 import { useAuthStore } from '../stores/authStore.js';
 import { useFriendStore } from '../stores/friendStore.js';
 import { useSocketStore } from '../stores/socketStore.js';
@@ -314,9 +315,7 @@ export const Messages = () => {
                 friendId === f.id ? 'bg-purple-600/20 text-white' : 'text-gray-400 hover:bg-white/5'
               }`}
             >
-              <div className="flex h-9 w-9 items-center justify-center rounded-full bg-purple-600/50 text-xs font-bold">
-                {f.displayName?.charAt(0)}
-              </div>
+              <UserAvatar user={f} size="sm" />
               <span className="text-sm">{f.displayName}</span>
             </Link>
           ))}
@@ -358,8 +357,8 @@ export const Messages = () => {
                       <div key={msg.id} className={`flex ${isOwn ? 'justify-end' : 'justify-start'}`}>
                         {/* Friend avatar — only on friend's messages */}
                         {!isOwn && (
-                          <div className="mr-2 mt-auto flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-pink-600/50 text-[10px] font-bold text-white">
-                            {msg.sender?.displayName?.charAt(0) || '?'}
+                          <div className="mr-2 mt-auto shrink-0">
+                            <UserAvatar user={msg.sender || friends.find((f) => f.id === friendId)} size="xs" />
                           </div>
                         )}
                         <div className={`max-w-[75%] sm:max-w-[65%] ${

@@ -32,3 +32,22 @@ export const loginSchema = z.object({
     .string()
     .min(1, 'Password is required'),
 });
+
+export const updateProfileSchema = z.object({
+  displayName: z
+    .string()
+    .min(1, 'Display name is required')
+    .max(50, 'Display name must be at most 50 characters')
+    .trim()
+    .optional(),
+  bio: z
+    .string()
+    .max(200, 'Bio must be at most 200 characters')
+    .trim()
+    .optional(),
+  avatarUrl: z
+    .string()
+    .max(50)
+    .trim()
+    .optional(),
+});

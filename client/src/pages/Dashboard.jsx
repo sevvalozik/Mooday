@@ -5,6 +5,7 @@ import { PageWrapper } from '../components/layout/PageWrapper.jsx';
 import { FriendGalaxy } from '../components/sphere/FriendGalaxy.jsx';
 import { StreakBadge } from '../components/ui/StreakBadge.jsx';
 import { DashboardSkeleton } from '../components/ui/Skeleton.jsx';
+import { UserAvatar } from '../components/ui/UserAvatar.jsx';
 import { useMoodStore } from '../stores/moodStore.js';
 import { useFriendStore } from '../stores/friendStore.js';
 import { useAuthStore } from '../stores/authStore.js';
@@ -111,9 +112,7 @@ export const Dashboard = () => {
                   key={r.id}
                   className="flex items-center gap-3 rounded-xl bg-white/5 px-4 py-3"
                 >
-                  <div className="flex h-9 w-9 items-center justify-center rounded-full bg-purple-600/30 text-xs font-bold text-white">
-                    {r.sender?.displayName?.charAt(0) || '?'}
-                  </div>
+                  <UserAvatar user={r.sender} size="sm" />
                   <div className="flex-1 min-w-0">
                     <p className="text-sm text-white">
                       <span className="font-semibold">{r.sender?.displayName}</span>

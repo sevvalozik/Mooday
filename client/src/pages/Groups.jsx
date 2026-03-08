@@ -5,6 +5,7 @@ import { Button } from '../components/ui/Button.jsx';
 import { Modal } from '../components/ui/Modal.jsx';
 import { Input } from '../components/ui/Input.jsx';
 import { CardSkeleton } from '../components/ui/Skeleton.jsx';
+import { UserAvatar } from '../components/ui/UserAvatar.jsx';
 import { EMOTIONS } from '../utils/emotionConfig.js';
 import * as groupService from '../services/groupService.js';
 import * as friendService from '../services/friendService.js';
@@ -161,9 +162,7 @@ export const Groups = () => {
                   .map((friend) => (
                     <div key={friend.id} className="flex items-center justify-between rounded-lg bg-white/5 px-3 py-2">
                       <div className="flex items-center gap-3">
-                        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-purple-600/30 text-xs font-bold text-purple-300">
-                          {friend.displayName?.[0]?.toUpperCase() || '?'}
-                        </div>
+                        <UserAvatar user={friend} size="xs" />
                         <span className="text-sm text-white">{friend.displayName}</span>
                       </div>
                       <button

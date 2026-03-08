@@ -5,6 +5,7 @@ import { MoodSphere } from '../components/sphere/MoodSphere.jsx';
 import { ReactionButton } from '../components/ui/ReactionButton.jsx';
 import { Button } from '../components/ui/Button.jsx';
 import { ProfileSkeleton } from '../components/ui/Skeleton.jsx';
+import { UserAvatar } from '../components/ui/UserAvatar.jsx';
 import { EMOTIONS } from '../utils/emotionConfig.js';
 import { useFriendStore } from '../stores/friendStore.js';
 import * as reactionService from '../services/reactionService.js';
@@ -55,9 +56,7 @@ export const FriendProfile = () => {
     <PageWrapper>
       <div className="flex flex-col items-center gap-6">
         <div className="text-center">
-          <div className="mb-2 mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-purple-600 text-2xl font-bold text-white">
-            {friend.displayName?.charAt(0)}
-          </div>
+          <UserAvatar user={friend} size="xl" className="mx-auto mb-2" />
           <h1 className="text-2xl font-bold text-white">{friend.displayName}</h1>
           <p className="text-gray-400">@{friend.username}</p>
         </div>

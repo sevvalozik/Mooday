@@ -134,3 +134,13 @@ export const getMe = async (userId) => {
 
   return sanitizeUser(user);
 };
+
+export const updateProfile = async (userId, data) => {
+  const user = await prisma.user.update({
+    where: { id: userId },
+    data,
+    include: { preferences: true },
+  });
+
+  return sanitizeUser(user);
+};

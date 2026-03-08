@@ -15,6 +15,7 @@ import { MonthlySummary } from './pages/MonthlySummary.jsx';
 import { Settings } from './pages/Settings.jsx';
 import { Notifications } from './pages/Notifications.jsx';
 import { Friends } from './pages/Friends.jsx';
+import { AvatarSetup } from './pages/AvatarSetup.jsx';
 import { useSocket } from './hooks/useSocket.js';
 import { useAuthStore } from './stores/authStore.js';
 import { loadSavedTheme } from './utils/themes.js';
@@ -48,6 +49,7 @@ export default function App() {
         <Route path="/" element={<Landing />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/avatar-setup" element={<ProtectedRoute><AvatarSetup /></ProtectedRoute>} />
         <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
         <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
         <Route path="/mood/new" element={<ProtectedRoute><MoodLogger /></ProtectedRoute>} />
