@@ -47,7 +47,6 @@ export const updateProfileSchema = z.object({
     .optional(),
   avatarUrl: z
     .string()
-    .max(50)
-    .trim()
+    .max(500)
     .optional(),
 });

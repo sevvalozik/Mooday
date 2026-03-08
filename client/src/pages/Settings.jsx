@@ -4,9 +4,9 @@ import { Input } from '../components/ui/Input.jsx';
 import { Button } from '../components/ui/Button.jsx';
 import { MoodSphere } from '../components/sphere/MoodSphere.jsx';
 import { AvatarPicker } from '../components/ui/AvatarPicker.jsx';
-import { UserAvatar } from '../components/ui/UserAvatar.jsx';
 import { useAuthStore } from '../stores/authStore.js';
 import { THEME_LIST, applyTheme } from '../utils/themes.js';
+import { DEFAULT_AVATAR, parseAvatarConfig, serializeAvatarConfig } from '../utils/avatars.js';
 import { toast } from '../components/ui/Toast.jsx';
 import api from '../services/api.js';
 
@@ -21,7 +21,8 @@ export const Settings = () => {
   const { user, setUser, sphereStyle, setSphereStyle } = useAuthStore();
   const [displayName, setDisplayName] = useState(user?.displayName || '');
   const [bio, setBio] = useState(user?.bio || '');
-  const [avatarKey, setAvatarKey] = useState(user?.avatarUrl || null);
+  const existingAvatar = parseAvatarConfig(user?.avatarUrl);
+  const [avatarConfig, setAvatarConfig] = useState(existingAvatar || { ...DEFAULT_AVATAR });
   const [theme, setTheme] = useState(localStorage.getItem('theme') || 'dark');
   const [privacy, setPrivacy] = useState(user?.preferences?.privacyLevel || 'friends');
   const [spherePreview, setSpherePreview] = useState('calm');
@@ -30,8 +31,9 @@ export const Settings = () => {
   const handleSave = async () => {
     setSaving(true);
     try {
-      const { data } = await api.patch(`/auth/me`, { displayName, bio, avatarUrl: avatarKey || undefined });
-      setUser({ ...user, displayName, bio, avatarUrl: avatarKey });
+      const avatarUrl = serializeAvatarConfig(avatarConfig);
+      await api.patch('/auth/me', { displayName, bio, avatarUrl });
+      setUser({ ...user, displayName, bio, avatarUrl });
       toast('Settings saved!', 'success');
     } catch {
       toast('Failed to save settings', 'error');
@@ -55,10 +57,10 @@ export const Settings = () => {
           <section className="rounded-xl border border-white/10 bg-white/5 p-6">
             <h2 className="mb-4 text-lg font-semibold text-white">Profile</h2>
             <div className="flex flex-col gap-4">
-              {/* Avatar */}
+              {/* Avatar Creator */}
               <div>
                 <label className="mb-2 block text-sm font-medium text-gray-300">Avatar</label>
-                <AvatarPicker selected={avatarKey} onSelect={setAvatarKey} compact />
+                <AvatarPicker config={avatarConfig} onChange={setAvatarConfig} compact />
               </div>
               <Input label="Display Name" value={displayName} onChange={(e) => setDisplayName(e.target.value)} />
               <div>
