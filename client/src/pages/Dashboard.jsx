@@ -86,6 +86,18 @@ export const Dashboard = () => {
         {/* Streak */}
         {streak && <StreakBadge count={streak.currentCount} longest={streak.longestCount} />}
 
+        {/* Current Mood Journal */}
+        {currentMood?.journal && (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="rounded-xl border border-white/10 bg-white/5 px-5 py-4"
+          >
+            <p className="mb-1 text-xs font-medium text-gray-500">Today's Journal</p>
+            <p className="text-sm text-gray-300 italic">"{currentMood.journal}"</p>
+          </motion.div>
+        )}
+
         {/* Galaxy View */}
         <motion.div
           initial={{ opacity: 0 }}

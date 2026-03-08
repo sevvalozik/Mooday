@@ -86,20 +86,27 @@ export const Profile = () => {
               return (
                 <div
                   key={log.id}
-                  className="flex items-center gap-3 rounded-lg border border-white/10 bg-white/5 px-4 py-3"
+                  className="rounded-lg border border-white/10 bg-white/5 px-4 py-3"
                 >
-                  <span className="text-xl">{logConfig.icon}</span>
-                  <div className="flex-1">
-                    <p className="text-sm font-medium" style={{ color: logConfig.color }}>
-                      {logConfig.label}
-                    </p>
-                    <p className="text-xs text-gray-500">
-                      {new Date(log.createdAt).toLocaleDateString('en-US', {
-                        weekday: 'short', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit',
-                      })}
-                    </p>
+                  <div className="flex items-center gap-3">
+                    <span className="text-xl">{logConfig.icon}</span>
+                    <div className="flex-1">
+                      <p className="text-sm font-medium" style={{ color: logConfig.color }}>
+                        {logConfig.label}
+                      </p>
+                      <p className="text-xs text-gray-500">
+                        {new Date(log.createdAt).toLocaleDateString('en-US', {
+                          weekday: 'short', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit',
+                        })}
+                      </p>
+                    </div>
+                    <span className="text-xs text-gray-400">{log.intensity}/10</span>
                   </div>
-                  <span className="text-xs text-gray-400">{log.intensity}/10</span>
+                  {log.journal && (
+                    <p className="mt-2 border-t border-white/5 pt-2 text-sm text-gray-300 italic">
+                      "{log.journal}"
+                    </p>
+                  )}
                 </div>
               );
             })}

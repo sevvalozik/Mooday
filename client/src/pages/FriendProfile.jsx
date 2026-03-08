@@ -64,10 +64,15 @@ export const FriendProfile = () => {
         <MoodSphere emotion={emotion} intensity={friend.latestMood?.intensity || 5} size="large" />
 
         {friend.latestMood && (
-          <p className="text-lg">
-            <span className="mr-2 text-2xl">{config.icon}</span>
-            Feeling <span className="font-bold" style={{ color: config.color }}>{config.label}</span>
-          </p>
+          <div className="text-center">
+            <p className="text-lg">
+              <span className="mr-2 text-2xl">{config.icon}</span>
+              Feeling <span className="font-bold" style={{ color: config.color }}>{config.label}</span>
+            </p>
+            {friend.latestMood.journal && (
+              <p className="mt-2 max-w-sm text-sm text-gray-400 italic">"{friend.latestMood.journal}"</p>
+            )}
+          </div>
         )}
 
         {/* Reactions */}
