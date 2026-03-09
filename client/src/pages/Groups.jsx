@@ -37,9 +37,9 @@ export const Groups = () => {
       const updated = await groupService.getGroup(groupId);
       setSelectedGroup(updated);
       setGroups((prev) => prev.map((g) => g.id === groupId ? updated : g));
-      toast('Member added!', 'success');
+      toast('Üye eklendi!', 'success');
     } catch (err) {
-      toast(err.response?.data?.error?.message || 'Failed to add member', 'error');
+      toast(err.response?.data?.error?.message || 'Üye eklenemedi', 'error');
     }
   };
 
@@ -50,9 +50,9 @@ export const Groups = () => {
       setGroups((prev) => [group, ...prev]);
       setNewGroupName('');
       setShowCreate(false);
-      toast('Group created!', 'success');
+      toast('Grup oluşturuldu!', 'success');
     } catch {
-      toast('Failed to create group', 'error');
+      toast('Grup oluşturulamadı', 'error');
     }
   };
 
@@ -60,8 +60,8 @@ export const Groups = () => {
     <PageWrapper>
       <div className="flex flex-col gap-6">
         <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-bold text-white">Groups</h1>
-          <Button onClick={() => setShowCreate(true)}>Create Group</Button>
+          <h1 className="text-2xl font-bold text-white">Gruplar</h1>
+          <Button onClick={() => setShowCreate(true)}>Grup Oluştur</Button>
         </div>
 
         {loading ? (
@@ -85,7 +85,7 @@ export const Groups = () => {
                     <span className="text-2xl">{group.emoji}</span>
                     <div>
                       <h3 className="font-semibold text-white">{group.name}</h3>
-                      <p className="text-sm text-gray-400">{group._count?.members || group.members?.length || 0} members</p>
+                      <p className="text-sm text-gray-400">{group._count?.members || group.members?.length || 0} üye</p>
                     </div>
                   </div>
                   {/* Member spheres preview */}
@@ -109,22 +109,22 @@ export const Groups = () => {
             </div>
 
             {groups.length === 0 && (
-              <p className="text-center text-gray-500">No groups yet. Create one to get started!</p>
+              <p className="text-center text-gray-500">Henüz grup yok. Başlamak için bir tane oluştur!</p>
             )}
           </>
         )}
 
         {/* Create Modal */}
-        <Modal isOpen={showCreate} onClose={() => setShowCreate(false)} title="Create Group">
+        <Modal isOpen={showCreate} onClose={() => setShowCreate(false)} title="Grup Oluştur">
           <div className="flex flex-col gap-4">
             <Input
-              label="Group Name"
-              placeholder="Close Friends"
+              label="Grup Adı"
+              placeholder="Yakın Arkadaşlar"
               value={newGroupName}
               onChange={(e) => setNewGroupName(e.target.value)}
             />
             <Button onClick={handleCreate} disabled={!newGroupName.trim()}>
-              Create
+              Oluştur
             </Button>
           </div>
         </Modal>
@@ -136,7 +136,7 @@ export const Groups = () => {
           title={selectedGroup?.name}
         >
           <div className="flex flex-col gap-4">
-            <p className="text-sm text-gray-400">Members</p>
+            <p className="text-sm text-gray-400">Üyeler</p>
             {selectedGroup?.members?.map((member) => {
               const emotion = member.user?.moodLogs?.[0]?.emotion || 'calm';
               const config = EMOTIONS[emotion] || EMOTIONS.calm;
@@ -156,7 +156,7 @@ export const Groups = () => {
             {friends.length > 0 && (
               <>
                 <hr className="border-white/10" />
-                <p className="text-sm text-gray-400">Add Friends</p>
+                <p className="text-sm text-gray-400">Arkadaş Ekle</p>
                 {friends
                   .filter((f) => !selectedGroup?.members?.some((m) => m.user?.id === f.id))
                   .map((friend) => (
@@ -169,12 +169,12 @@ export const Groups = () => {
                         onClick={() => handleAddMember(selectedGroup.id, friend.id)}
                         className="rounded-lg bg-purple-600 px-3 py-1 text-xs font-medium text-white hover:bg-purple-500"
                       >
-                        Add
+                        Ekle
                       </button>
                     </div>
                   ))}
                 {friends.filter((f) => !selectedGroup?.members?.some((m) => m.user?.id === f.id)).length === 0 && (
-                  <p className="text-center text-xs text-gray-500">All friends are already in this group</p>
+                  <p className="text-center text-xs text-gray-500">Tüm arkadaşların zaten bu grupta</p>
                 )}
               </>
             )}

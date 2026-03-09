@@ -29,7 +29,7 @@ export const Register = () => {
     setError('');
 
     if (form.password !== form.confirmPassword) {
-      setError('Passwords do not match');
+      setError('Şifreler eşleşmiyor');
       return;
     }
 
@@ -46,7 +46,7 @@ export const Register = () => {
       setStep(2);
     } catch (err) {
       setLoading(false);
-      setError(err.response?.data?.error?.message || 'Registration failed');
+      setError(err.response?.data?.error?.message || 'Kayıt başarısız');
     }
   };
 
@@ -56,10 +56,10 @@ export const Register = () => {
       const avatarUrl = serializeAvatarConfig(avatarConfig);
       await api.patch('/auth/me', { avatarUrl });
       setUser({ ...user, avatarUrl });
-      toast('Welcome to Mooday!', 'success');
+      toast('Mooday\'e hoş geldin!', 'success');
       navigate('/dashboard');
     } catch {
-      toast('Failed to save avatar', 'error');
+      toast('Avatar kaydedilemedi', 'error');
     } finally {
       setSavingAvatar(false);
     }
@@ -95,7 +95,7 @@ export const Register = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
           >
-            <p className="mb-4 text-center text-gray-400">Create your account</p>
+            <p className="mb-4 text-center text-gray-400">Hesabını oluştur</p>
             <form onSubmit={handleSubmit} className="flex flex-col gap-4 rounded-2xl border border-white/10 bg-white/5 p-8 backdrop-blur-sm">
               {error && (
                 <div className="rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-2 text-sm text-red-400">
@@ -103,20 +103,20 @@ export const Register = () => {
                 </div>
               )}
 
-              <Input label="Email" type="email" placeholder="you@example.com" value={form.email} onChange={handleChange('email')} required />
-              <Input label="Username" placeholder="cooluser" value={form.username} onChange={handleChange('username')} required />
-              <Input label="Display Name" placeholder="Your Name" value={form.displayName} onChange={handleChange('displayName')} required />
-              <Input label="Password" type="password" placeholder="Min 6 characters" value={form.password} onChange={handleChange('password')} required />
-              <Input label="Confirm Password" type="password" placeholder="Repeat password" value={form.confirmPassword} onChange={handleChange('confirmPassword')} required />
+              <Input label="E-posta" type="email" placeholder="you@example.com" value={form.email} onChange={handleChange('email')} required />
+              <Input label="Kullanıcı Adı" placeholder="kullanici_adi" value={form.username} onChange={handleChange('username')} required />
+              <Input label="Görünen Ad" placeholder="Adın" value={form.displayName} onChange={handleChange('displayName')} required />
+              <Input label="Şifre" type="password" placeholder="En az 6 karakter" value={form.password} onChange={handleChange('password')} required />
+              <Input label="Şifre Tekrar" type="password" placeholder="Şifreyi tekrarla" value={form.confirmPassword} onChange={handleChange('confirmPassword')} required />
 
               <Button type="submit" loading={loading} className="mt-2 w-full">
-                Next
+                İleri
               </Button>
 
               <p className="text-center text-sm text-gray-400">
-                Already have an account?{' '}
+                Zaten hesabın var mı?{' '}
                 <Link to="/login" className="text-purple-400 hover:text-purple-300">
-                  Login
+                  Giriş yap
                 </Link>
               </p>
             </form>
@@ -129,7 +129,7 @@ export const Register = () => {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
           >
-            <p className="mb-4 text-center text-gray-400">Design your avatar</p>
+            <p className="mb-4 text-center text-gray-400">Avatarını tasarla</p>
             <div className="flex flex-col gap-5 rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur-sm">
               <AvatarPicker config={avatarConfig} onChange={setAvatarConfig} />
 
@@ -138,10 +138,10 @@ export const Register = () => {
                   onClick={handleSkip}
                   className="flex-1 rounded-xl border border-white/10 px-4 py-3 text-sm font-medium text-gray-400 transition-colors hover:bg-white/5 hover:text-white"
                 >
-                  Skip
+                  Atla
                 </button>
                 <Button onClick={handleSaveAvatar} loading={savingAvatar} className="flex-1">
-                  Done
+                  Tamam
                 </Button>
               </div>
             </div>

@@ -1,11 +1,11 @@
 import { motion } from 'framer-motion';
 
 const REACTIONS = [
-  { type: 'hug', emoji: '🤗', label: 'Hug' },
-  { type: 'cheer', emoji: '🎉', label: 'Cheer' },
-  { type: 'high-five', emoji: '🙌', label: 'High Five' },
-  { type: 'heart', emoji: '❤️', label: 'Heart' },
-  { type: 'laugh', emoji: '😄', label: 'Laugh' },
+  { type: 'hug', emoji: '🤗', label: 'Sarılma' },
+  { type: 'cheer', emoji: '🎉', label: 'Tezahürat' },
+  { type: 'high-five', emoji: '🙌', label: 'Çak' },
+  { type: 'heart', emoji: '❤️', label: 'Kalp' },
+  { type: 'laugh', emoji: '😄', label: 'Gülme' },
 ];
 
 export const ReactionButton = ({ onReact, disabled = false }) => {

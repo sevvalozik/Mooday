@@ -1,11 +1,11 @@
 import { motion } from 'framer-motion';
 
 const MILESTONES = [
-  { min: 100, label: 'Legend', color: 'bg-amber-400/20 text-amber-300' },
-  { min: 60, label: 'Diamond', color: 'bg-cyan-400/20 text-cyan-300' },
-  { min: 30, label: 'Gold', color: 'bg-yellow-400/20 text-yellow-300' },
-  { min: 14, label: 'Silver', color: 'bg-slate-300/20 text-slate-300' },
-  { min: 7, label: 'Bronze', color: 'bg-orange-400/20 text-orange-300' },
+  { min: 100, label: 'Efsane', color: 'bg-amber-400/20 text-amber-300' },
+  { min: 60, label: 'Elmas', color: 'bg-cyan-400/20 text-cyan-300' },
+  { min: 30, label: 'Altın', color: 'bg-yellow-400/20 text-yellow-300' },
+  { min: 14, label: 'Gümüş', color: 'bg-slate-300/20 text-slate-300' },
+  { min: 7, label: 'Bronz', color: 'bg-orange-400/20 text-orange-300' },
 ];
 
 export const StreakBadge = ({ count = 0, longest = 0 }) => {
@@ -24,8 +24,8 @@ export const StreakBadge = ({ count = 0, longest = 0 }) => {
           {count}
         </div>
         <div>
-          <p className="text-sm font-bold text-orange-400">day streak</p>
-          <p className="text-xs text-gray-400">Best: {longest}d / Next: {nextMilestone}d</p>
+          <p className="text-sm font-bold text-orange-400">günlük seri</p>
+          <p className="text-xs text-gray-400">En iyi: {longest}d / Sonraki: {nextMilestone}d</p>
         </div>
       </div>
       {earned.length > 0 && (

@@ -11,11 +11,15 @@ import { toast } from '../components/ui/Toast.jsx';
 import api from '../services/api.js';
 
 const STYLE_OPTIONS = [
-  { key: 'default', label: 'Classic', desc: 'Smooth organic displacement' },
-  { key: 'crystal', label: 'Crystal', desc: 'Faceted gem with rainbow refraction' },
-  { key: 'nebula', label: 'Nebula', desc: 'Deep space with aurora bands' },
-  { key: 'wireframe', label: 'Wireframe', desc: 'Holographic data grid' },
+  { key: 'default', label: 'Klasik', desc: 'Pürüzsüz organik şekil değiştirme' },
+  { key: 'crystal', label: 'Kristal', desc: 'Gökkuşağı yansımalı kesme taş' },
 ];
+
+const PRIVACY_LABELS = {
+  public: 'Herkese Açık',
+  friends: 'Sadece Arkadaşlar',
+  private: 'Gizli',
+};
 
 export const Settings = () => {
   const { user, setUser, sphereStyle, setSphereStyle } = useAuthStore();
@@ -34,9 +38,9 @@ export const Settings = () => {
       const avatarUrl = serializeAvatarConfig(avatarConfig);
       await api.patch('/auth/me', { displayName, bio, avatarUrl });
       setUser({ ...user, displayName, bio, avatarUrl });
-      toast('Settings saved!', 'success');
+      toast('Ayarlar kaydedildi!', 'success');
     } catch {
-      toast('Failed to save settings', 'error');
+      toast('Ayarlar kaydedilemedi', 'error');
     } finally {
       setSaving(false);
     }
@@ -50,36 +54,36 @@ export const Settings = () => {
   return (
     <PageWrapper>
       <div className="mx-auto max-w-lg">
-        <h1 className="mb-6 text-2xl font-bold text-white">Settings</h1>
+        <h1 className="mb-6 text-2xl font-bold text-white">Ayarlar</h1>
 
         <div className="flex flex-col gap-8">
           {/* Profile */}
           <section className="rounded-xl border border-white/10 bg-white/5 p-6">
-            <h2 className="mb-4 text-lg font-semibold text-white">Profile</h2>
+            <h2 className="mb-4 text-lg font-semibold text-white">Profil</h2>
             <div className="flex flex-col gap-4">
               {/* Avatar Creator */}
               <div>
                 <label className="mb-2 block text-sm font-medium text-gray-300">Avatar</label>
                 <AvatarPicker config={avatarConfig} onChange={setAvatarConfig} compact />
               </div>
-              <Input label="Display Name" value={displayName} onChange={(e) => setDisplayName(e.target.value)} />
+              <Input label="Görünen Ad" value={displayName} onChange={(e) => setDisplayName(e.target.value)} />
               <div>
-                <label className="mb-1.5 block text-sm font-medium text-gray-300">Bio</label>
+                <label className="mb-1.5 block text-sm font-medium text-gray-300">Hakkımda</label>
                 <textarea
                   value={bio}
                   onChange={(e) => setBio(e.target.value)}
                   rows={2}
                   className="w-full resize-none rounded-lg border border-white/10 bg-white/5 px-4 py-2.5 text-white placeholder-gray-500 outline-none focus:border-purple-500"
-                  placeholder="Tell something about yourself..."
+                  placeholder="Kendinden bahset..."
                 />
               </div>
-              <Button onClick={handleSave} loading={saving}>Save Profile</Button>
+              <Button onClick={handleSave} loading={saving}>Kaydet</Button>
             </div>
           </section>
 
           {/* Privacy */}
           <section className="rounded-xl border border-white/10 bg-white/5 p-6">
-            <h2 className="mb-4 text-lg font-semibold text-white">Privacy</h2>
+            <h2 className="mb-4 text-lg font-semibold text-white">Gizlilik</h2>
             <div className="flex flex-col gap-2">
               {['public', 'friends', 'private'].map((level) => (
                 <label key={level} className={`flex cursor-pointer items-center gap-3 rounded-lg px-4 py-3 transition-colors ${
@@ -94,11 +98,11 @@ export const Settings = () => {
                     className="accent-purple-500"
                   />
                   <div>
-                    <p className="text-sm font-medium text-white capitalize">{level}</p>
+                    <p className="text-sm font-medium text-white">{PRIVACY_LABELS[level]}</p>
                     <p className="text-xs text-gray-400">
-                      {level === 'public' && 'Anyone can see your mood'}
-                      {level === 'friends' && 'Only friends can see your mood'}
-                      {level === 'private' && 'Only you can see your mood'}
+                      {level === 'public' && 'Herkes ruh halini görebilir'}
+                      {level === 'friends' && 'Sadece arkadaşların görebilir'}
+                      {level === 'private' && 'Sadece sen görebilirsin'}
                     </p>
                   </div>
                 </label>
@@ -108,7 +112,7 @@ export const Settings = () => {
 
           {/* Theme */}
           <section className="rounded-xl border border-white/10 bg-white/5 p-6">
-            <h2 className="mb-4 text-lg font-semibold text-white">Theme</h2>
+            <h2 className="mb-4 text-lg font-semibold text-white">Tema</h2>
             <div className="grid grid-cols-2 gap-3">
               {THEME_LIST.map((t) => (
                 <button
@@ -138,7 +142,7 @@ export const Settings = () => {
 
           {/* Sphere Style */}
           <section className="rounded-xl border border-white/10 bg-white/5 p-6">
-            <h2 className="mb-4 text-lg font-semibold text-white">Sphere Style</h2>
+            <h2 className="mb-4 text-lg font-semibold text-white">Küre Stili</h2>
             <div className="flex justify-center">
               <MoodSphere emotion={spherePreview} intensity={7} size="medium" style={sphereStyle} />
             </div>

@@ -96,13 +96,13 @@ const SongShareModal = ({ onSend, onClose }) => {
       className="absolute bottom-full left-0 right-0 mb-2 rounded-xl border border-white/10 bg-gray-900 p-4 shadow-xl"
     >
       <div className="mb-3 flex items-center justify-between">
-        <h3 className="text-sm font-semibold text-white">Share a Song</h3>
+        <h3 className="text-sm font-semibold text-white">Şarkı Paylaş</h3>
         <button onClick={onClose} className="text-gray-400 hover:text-white">&times;</button>
       </div>
       <form onSubmit={handleSubmit} className="flex flex-col gap-2">
-        <input value={songTitle} onChange={(e) => setSongTitle(e.target.value)} placeholder="Song title *" className="rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-white placeholder-gray-500 outline-none focus:border-purple-500" />
-        <input value={artistName} onChange={(e) => setArtistName(e.target.value)} placeholder="Artist name" className="rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-white placeholder-gray-500 outline-none focus:border-purple-500" />
-        <input value={songUrl} onChange={(e) => setSongUrl(e.target.value)} placeholder="Song link (Spotify, YouTube, etc.) *" className="rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-white placeholder-gray-500 outline-none focus:border-purple-500" />
+        <input value={songTitle} onChange={(e) => setSongTitle(e.target.value)} placeholder="Şarkı adı *" className="rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-white placeholder-gray-500 outline-none focus:border-purple-500" />
+        <input value={artistName} onChange={(e) => setArtistName(e.target.value)} placeholder="Sanatçı adı" className="rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-white placeholder-gray-500 outline-none focus:border-purple-500" />
+        <input value={songUrl} onChange={(e) => setSongUrl(e.target.value)} placeholder="Şarkı linki (Spotify, YouTube vb.) *" className="rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-white placeholder-gray-500 outline-none focus:border-purple-500" />
         <div className="flex gap-2">
           {['spotify', 'youtube', 'apple', 'other'].map((p) => (
             <button key={p} type="button" onClick={() => setPlatform(p)} className={`rounded-lg px-3 py-1 text-xs font-medium transition-colors ${platform === p ? 'bg-purple-600 text-white' : 'bg-white/5 text-gray-400 hover:text-white'}`}>
@@ -110,9 +110,9 @@ const SongShareModal = ({ onSend, onClose }) => {
             </button>
           ))}
         </div>
-        <input value={note} onChange={(e) => setNote(e.target.value)} placeholder="Add a note (optional)" className="rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-white placeholder-gray-500 outline-none focus:border-purple-500" />
+        <input value={note} onChange={(e) => setNote(e.target.value)} placeholder="Not ekle (isteğe bağlı)" className="rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-white placeholder-gray-500 outline-none focus:border-purple-500" />
         <button type="submit" disabled={!songTitle.trim() || !songUrl.trim()} className="rounded-lg bg-purple-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-purple-500 disabled:opacity-40">
-          Share Song
+          Paylaş
         </button>
       </form>
     </motion.div>
@@ -136,14 +136,14 @@ const ImageShareModal = ({ onSend, onClose }) => {
       className="absolute bottom-full left-0 right-0 mb-2 rounded-xl border border-white/10 bg-gray-900 p-4 shadow-xl"
     >
       <div className="mb-3 flex items-center justify-between">
-        <h3 className="text-sm font-semibold text-white">Share a Photo</h3>
+        <h3 className="text-sm font-semibold text-white">Fotoğraf Paylaş</h3>
         <button onClick={onClose} className="text-gray-400 hover:text-white">&times;</button>
       </div>
       <form onSubmit={handleSubmit} className="flex flex-col gap-2">
         <input
           value={imageUrl}
           onChange={(e) => setImageUrl(e.target.value)}
-          placeholder="Paste image URL..."
+          placeholder="Görsel URL'si yapıştır..."
           className="rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-white placeholder-gray-500 outline-none focus:border-purple-500"
         />
         {imageUrl.trim() && (
@@ -159,7 +159,7 @@ const ImageShareModal = ({ onSend, onClose }) => {
           disabled={!imageUrl.trim()}
           className="rounded-lg bg-purple-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-purple-500 disabled:opacity-40"
         >
-          Send Photo
+          Gönder
         </button>
       </form>
     </motion.div>
@@ -303,9 +303,9 @@ export const Messages = () => {
         <div className={`${
           showMobileFriendList ? 'flex' : 'hidden md:flex'
         } w-full flex-col gap-1 overflow-y-auto rounded-xl border border-white/10 bg-white/5 p-3 md:w-64`}>
-          <h2 className="mb-2 px-2 text-sm font-semibold text-gray-400">Conversations</h2>
+          <h2 className="mb-2 px-2 text-sm font-semibold text-gray-400">Sohbetler</h2>
           {friends.length === 0 && (
-            <p className="px-2 py-4 text-center text-sm text-gray-500">No friends yet</p>
+            <p className="px-2 py-4 text-center text-sm text-gray-500">Henüz arkadaşın yok</p>
           )}
           {friends.map((f) => (
             <Link
@@ -338,7 +338,7 @@ export const Messages = () => {
                   </svg>
                 </button>
                 <p className="font-semibold text-white">
-                  {friends.find((f) => f.id === friendId)?.displayName || 'Chat'}
+                  {friends.find((f) => f.id === friendId)?.displayName || 'Sohbet'}
                 </p>
               </div>
 
@@ -418,7 +418,7 @@ export const Messages = () => {
                     className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-lg transition-colors ${
                       showMemes ? 'bg-purple-600 text-white' : 'bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white'
                     }`}
-                    title="Send a meme"
+                    title="Meme gönder"
                   >
                     <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M15.182 15.182a4.5 4.5 0 01-6.364 0M21 12a9 9 0 11-18 0 9 9 0 0118 0zM9.75 9.75c0 .414-.168.75-.375.75S9 10.164 9 9.75 9.168 9 9.375 9s.375.336.375.75zm-.375 0h.008v.015h-.008V9.75zm5.625 0c0 .414-.168.75-.375.75s-.375-.336-.375-.75.168-.75.375-.75.375.336.375.75zm-.375 0h.008v.015h-.008V9.75z" /></svg>
                   </button>
@@ -428,7 +428,7 @@ export const Messages = () => {
                     className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-lg transition-colors ${
                       showMusic ? 'bg-purple-600 text-white' : 'bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white'
                     }`}
-                    title="Share a song"
+                    title="Şarkı paylaş"
                   >
                     <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M9 9l10.5-3m0 6.553v3.75a2.25 2.25 0 01-1.632 2.163l-1.32.377a1.803 1.803 0 11-.99-3.467l2.31-.66a2.25 2.25 0 001.632-2.163zm0 0V4.846a2.25 2.25 0 00-1.632-2.163l-6-1.714A2.25 2.25 0 004.5 3.132v15.12a2.25 2.25 0 01-1.632 2.163l-1.32.377a1.803 1.803 0 11-.99-3.467l2.31-.66A2.25 2.25 0 004.5 14.502V9" /></svg>
                   </button>
@@ -438,25 +438,25 @@ export const Messages = () => {
                     className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-lg transition-colors ${
                       showImage ? 'bg-purple-600 text-white' : 'bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white'
                     }`}
-                    title="Share a photo"
+                    title="Fotoğraf paylaş"
                   >
                     <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909M2.25 18.75h18a1.5 1.5 0 001.5-1.5V6.75a1.5 1.5 0 00-1.5-1.5h-18a1.5 1.5 0 00-1.5 1.5v10.5a1.5 1.5 0 001.5 1.5zm12.75-11.25h.008v.008h-.008V7.5zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" /></svg>
                   </button>
                   <input
                     value={newMessage}
                     onChange={(e) => setNewMessage(e.target.value)}
-                    placeholder="Type a message..."
+                    placeholder="Mesaj yaz..."
                     className="min-w-0 flex-1 rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-white placeholder-gray-500 outline-none focus:border-purple-500 sm:px-4"
                   />
                   <Button type="submit" loading={sending} disabled={!newMessage.trim()}>
-                    Send
+                    Gönder
                   </Button>
                 </form>
               </div>
             </>
           ) : (
             <div className="flex flex-1 items-center justify-center text-gray-500">
-              Select a conversation to start chatting
+              Sohbet başlatmak için bir kişi seç
             </div>
           )}
         </div>

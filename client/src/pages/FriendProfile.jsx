@@ -46,9 +46,9 @@ export const FriendProfile = () => {
         moodLogId: friend.latestMood?.id,
         type,
       });
-      toast('Reaction sent!', 'success');
+      toast('Tepki gönderildi!', 'success');
     } catch {
-      toast('Failed to send reaction', 'error');
+      toast('Tepki gönderilemedi', 'error');
     }
   };
 
@@ -67,7 +67,7 @@ export const FriendProfile = () => {
           <div className="text-center">
             <p className="text-lg">
               <span className="mr-2 text-2xl">{config.icon}</span>
-              Feeling <span className="font-bold" style={{ color: config.color }}>{config.label}</span>
+              Hissediyor: <span className="font-bold" style={{ color: config.color }}>{config.label}</span>
             </p>
             {friend.latestMood.journal && (
               <p className="mt-2 max-w-sm text-sm text-gray-400 italic">"{friend.latestMood.journal}"</p>
@@ -77,19 +77,19 @@ export const FriendProfile = () => {
 
         {/* Reactions */}
         <div>
-          <p className="mb-2 text-center text-sm text-gray-400">Send a reaction</p>
+          <p className="mb-2 text-center text-sm text-gray-400">Tepki gönder</p>
           <ReactionButton onReact={handleReact} />
         </div>
 
         {/* Compatibility */}
         {compatibility && (
           <div className="w-full max-w-sm rounded-xl border border-white/10 bg-white/5 p-6 text-center">
-            <p className="text-sm text-gray-400">Emotional Compatibility</p>
+            <p className="text-sm text-gray-400">Duygusal Uyum</p>
             <p className="text-4xl font-bold text-purple-400">{compatibility.score}%</p>
             <p className="mt-2 text-sm text-gray-400">{compatibility.insight}</p>
             {compatibility.sharedEmotions?.length > 0 && (
               <p className="mt-2 text-xs text-gray-500">
-                Shared emotions: {compatibility.sharedEmotions.map((e) => EMOTIONS[e]?.icon).join(' ')}
+                Ortak duygular: {compatibility.sharedEmotions.map((e) => EMOTIONS[e]?.icon).join(' ')}
               </p>
             )}
           </div>
@@ -98,7 +98,7 @@ export const FriendProfile = () => {
         {/* Actions */}
         <div className="flex gap-3">
           <Button variant="secondary" onClick={() => window.location.href = `/messages/${friend.id}`}>
-            Message
+            Mesaj
           </Button>
         </div>
       </div>

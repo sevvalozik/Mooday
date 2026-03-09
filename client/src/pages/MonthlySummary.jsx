@@ -6,7 +6,7 @@ import { Button } from '../components/ui/Button.jsx';
 import { EMOTIONS } from '../utils/emotionConfig.js';
 import * as insightService from '../services/insightService.js';
 
-const SLIDES = ['overview', 'distribution', 'timeline', 'highlights', 'streak'];
+const SLIDES = ['overview', 'galaxy', 'distribution', 'timeline', 'highlights', 'streak'];
 
 export const MonthlySummary = () => {
   const [data, setData] = useState(null);
@@ -25,7 +25,7 @@ export const MonthlySummary = () => {
   if (loading) {
     return (
       <PageWrapper>
-        <div className="flex items-center justify-center py-20 text-gray-400">Loading summary...</div>
+        <div className="flex items-center justify-center py-20 text-gray-400">Yükleniyor...</div>
       </PageWrapper>
     );
   }
@@ -33,7 +33,7 @@ export const MonthlySummary = () => {
   if (!data || data.totalLogs === 0) {
     return (
       <PageWrapper>
-        <div className="text-center py-20 text-gray-400">No mood data for this month yet.</div>
+        <div className="text-center py-20 text-gray-400">Bu ay için henüz veri yok.</div>
       </PageWrapper>
     );
   }
@@ -47,7 +47,7 @@ export const MonthlySummary = () => {
   return (
     <PageWrapper>
       <div className="mx-auto max-w-lg">
-        <h1 className="mb-6 text-center text-2xl font-bold text-white">Monthly Wrapped</h1>
+        <h1 className="mb-6 text-center text-2xl font-bold text-white">Aylık Özet</h1>
 
         <div className="relative min-h-[400px] rounded-2xl border border-white/10 bg-white/5 p-8">
           <AnimatePresence mode="wait">
@@ -62,17 +62,74 @@ export const MonthlySummary = () => {
               {/* Slide 0: Overview */}
               {slide === 0 && (
                 <div className="flex flex-col items-center gap-4 text-center">
-                  <h2 className="text-3xl font-bold text-purple-400">Your Month</h2>
+                  <h2 className="text-3xl font-bold text-purple-400">Ayın Özeti</h2>
                   <p className="text-5xl font-bold text-white">{data.totalLogs}</p>
-                  <p className="text-gray-400">moods logged</p>
-                  <p className="text-lg text-gray-300">Average intensity: <span className="font-bold text-white">{data.averageIntensity}/10</span></p>
+                  <p className="text-gray-400">ruh hali kaydedildi</p>
+                  <p className="text-lg text-gray-300">Ortalama yoğunluk: <span className="font-bold text-white">{data.averageIntensity}/10</span></p>
                 </div>
               )}
 
-              {/* Slide 1: Emotion Distribution */}
+              {/* Slide 1: 30-Day Galaxy */}
               {slide === 1 && (
                 <div className="flex flex-col items-center gap-4">
-                  <h2 className="text-xl font-bold text-white">Emotion Breakdown</h2>
+                  <h2 className="text-xl font-bold text-white">Ayın Galaksisi</h2>
+                  <p className="text-sm text-gray-400">Her küre bir günü temsil ediyor</p>
+                  <div className="relative mx-auto h-72 w-72">
+                    {(data.dailyMoods || []).map((day, i) => {
+                      const total = data.dailyMoods.length || 30;
+                      const angle = (i / total) * Math.PI * 2 - Math.PI / 2;
+                      const ring = i < 10 ? 0 : i < 22 ? 1 : 2;
+                      const radius = 40 + ring * 38;
+                      const x = 136 + Math.cos(angle + ring * 0.3) * radius;
+                      const y = 136 + Math.sin(angle + ring * 0.3) * radius;
+                      const emotion = day.dominantEmotion || 'calm';
+                      const cfg = EMOTIONS[emotion] || EMOTIONS.calm;
+                      const size = 10 + (day.intensity || 5) * 0.8;
+                      return (
+                        <motion.div
+                          key={i}
+                          initial={{ scale: 0, opacity: 0 }}
+                          animate={{ scale: 1, opacity: 1 }}
+                          transition={{ delay: i * 0.04 }}
+                          className="absolute flex items-center justify-center rounded-full"
+                          style={{
+                            left: x - size / 2,
+                            top: y - size / 2,
+                            width: size,
+                            height: size,
+                            backgroundColor: cfg.color,
+                            boxShadow: `0 0 ${size}px ${cfg.color}60`,
+                          }}
+                          title={`Gün ${day.day}: ${cfg.label}`}
+                        >
+                          <span className="text-[6px]">{cfg.icon}</span>
+                        </motion.div>
+                      );
+                    })}
+                    {/* Center label */}
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <div className="text-center">
+                        <p className="text-xs text-gray-500">{data.totalLogs}</p>
+                        <p className="text-[10px] text-gray-600">kayıt</p>
+                      </div>
+                    </div>
+                  </div>
+                  {/* Legend */}
+                  <div className="flex flex-wrap justify-center gap-1.5">
+                    {Object.entries(EMOTIONS).map(([key, cfg]) => (
+                      <span key={key} className="flex items-center gap-1 text-[10px] text-gray-500">
+                        <span className="inline-block h-2 w-2 rounded-full" style={{ backgroundColor: cfg.color }} />
+                        {cfg.label}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Slide 2: Emotion Distribution */}
+              {slide === 2 && (
+                <div className="flex flex-col items-center gap-4">
+                  <h2 className="text-xl font-bold text-white">Duygu Dağılımı</h2>
                   <ResponsiveContainer width="100%" height={200}>
                     <PieChart>
                       <Pie data={data.emotionDistribution} dataKey="count" nameKey="label" cx="50%" cy="50%" outerRadius={80}>
@@ -93,13 +150,13 @@ export const MonthlySummary = () => {
                 </div>
               )}
 
-              {/* Slide 2: Weekly Timeline */}
-              {slide === 2 && (
+              {/* Slide 3: Weekly Timeline */}
+              {slide === 3 && (
                 <div className="flex flex-col items-center gap-4">
-                  <h2 className="text-xl font-bold text-white">Weekly Valence</h2>
+                  <h2 className="text-xl font-bold text-white">Haftalık Duygu Grafiği</h2>
                   <ResponsiveContainer width="100%" height={200}>
                     <LineChart data={data.weeklyAverages}>
-                      <XAxis dataKey="week" tick={{ fill: '#9ca3af' }} tickFormatter={(w) => `W${w}`} />
+                      <XAxis dataKey="week" tick={{ fill: '#9ca3af' }} tickFormatter={(w) => `H${w}`} />
                       <YAxis tick={{ fill: '#9ca3af' }} domain={[-1, 1]} />
                       <Tooltip />
                       <Line type="monotone" dataKey="avgValence" stroke="#8b5cf6" strokeWidth={2} dot={{ r: 4 }} />
@@ -108,38 +165,38 @@ export const MonthlySummary = () => {
                 </div>
               )}
 
-              {/* Slide 3: Highlights */}
-              {slide === 3 && (
+              {/* Slide 4: Highlights */}
+              {slide === 4 && (
                 <div className="flex flex-col gap-6 text-center">
-                  <h2 className="text-xl font-bold text-white">Highlights</h2>
+                  <h2 className="text-xl font-bold text-white">Öne Çıkanlar</h2>
                   {data.happiestDay && (
                     <div>
-                      <p className="text-sm text-gray-400">Happiest Day</p>
+                      <p className="text-sm text-gray-400">En Mutlu Gün</p>
                       <p className="text-2xl">{EMOTIONS[data.happiestDay.emotion]?.icon}</p>
                       <p className="text-sm text-gray-300">
-                        {new Date(data.happiestDay.date).toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' })}
+                        {new Date(data.happiestDay.date).toLocaleDateString('tr-TR', { weekday: 'long', month: 'short', day: 'numeric' })}
                       </p>
                     </div>
                   )}
                   {data.saddestDay && (
                     <div>
-                      <p className="text-sm text-gray-400">Toughest Day</p>
+                      <p className="text-sm text-gray-400">En Zor Gün</p>
                       <p className="text-2xl">{EMOTIONS[data.saddestDay.emotion]?.icon}</p>
                       <p className="text-sm text-gray-300">
-                        {new Date(data.saddestDay.date).toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' })}
+                        {new Date(data.saddestDay.date).toLocaleDateString('tr-TR', { weekday: 'long', month: 'short', day: 'numeric' })}
                       </p>
                     </div>
                   )}
                 </div>
               )}
 
-              {/* Slide 4: Streak */}
-              {slide === 4 && (
+              {/* Slide 5: Streak */}
+              {slide === 5 && (
                 <div className="flex flex-col items-center gap-4 text-center">
-                  <h2 className="text-xl font-bold text-white">Your Streak</h2>
+                  <h2 className="text-xl font-bold text-white">Serin</h2>
                   <p className="text-6xl">🔥</p>
-                  <p className="text-4xl font-bold text-orange-400">{data.currentStreak} days</p>
-                  <p className="text-gray-400">Longest ever: {data.longestStreak} days</p>
+                  <p className="text-4xl font-bold text-orange-400">{data.currentStreak} gün</p>
+                  <p className="text-gray-400">En uzun seri: {data.longestStreak} gün</p>
                 </div>
               )}
             </motion.div>
@@ -149,7 +206,7 @@ export const MonthlySummary = () => {
         {/* Navigation */}
         <div className="mt-6 flex items-center justify-between">
           <Button variant="ghost" onClick={() => setSlide((s) => Math.max(0, s - 1))} disabled={slide === 0}>
-            ← Back
+            ← Geri
           </Button>
           <div className="flex gap-2">
             {SLIDES.map((_, i) => (
@@ -157,7 +214,7 @@ export const MonthlySummary = () => {
             ))}
           </div>
           <Button variant="ghost" onClick={() => setSlide((s) => Math.min(SLIDES.length - 1, s + 1))} disabled={slide === SLIDES.length - 1}>
-            Next →
+            İleri →
           </Button>
         </div>
       </div>

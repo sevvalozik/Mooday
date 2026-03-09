@@ -21,10 +21,10 @@ export const AvatarSetup = () => {
       const avatarUrl = serializeAvatarConfig(config);
       await api.patch('/auth/me', { avatarUrl });
       setUser({ ...user, avatarUrl });
-      toast('Avatar updated!', 'success');
+      toast('Avatar güncellendi!', 'success');
       navigate('/dashboard');
     } catch {
-      toast('Failed to save avatar', 'error');
+      toast('Avatar kaydedilemedi', 'error');
     } finally {
       setSaving(false);
     }
@@ -42,8 +42,8 @@ export const AvatarSetup = () => {
         className="w-full max-w-lg"
       >
         <div className="mb-6 text-center">
-          <h1 className="text-2xl font-bold text-white">Design Your Avatar</h1>
-          <p className="mt-2 text-gray-400">Customize your look</p>
+          <h1 className="text-2xl font-bold text-white">Avatarını Tasarla</h1>
+          <p className="mt-2 text-gray-400">Görünümünü özelleştir</p>
         </div>
 
         <div className="rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur-sm">
@@ -54,10 +54,10 @@ export const AvatarSetup = () => {
               onClick={handleSkip}
               className="flex-1 rounded-xl border border-white/10 px-4 py-3 text-sm font-medium text-gray-400 transition-colors hover:bg-white/5 hover:text-white"
             >
-              Skip
+              Atla
             </button>
             <Button onClick={handleSave} loading={saving} className="flex-1">
-              Save Avatar
+              Kaydet
             </Button>
           </div>
         </div>

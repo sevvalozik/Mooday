@@ -152,7 +152,7 @@ export const AvatarPicker = ({ config, onChange, compact = false }) => {
           {activeTab === 'hair' && (
             <div className="flex flex-col gap-3">
               <div>
-                <p className="mb-1.5 text-center text-[10px] font-medium uppercase tracking-wider text-gray-500">Style</p>
+                <p className="mb-1.5 text-center text-[10px] font-medium uppercase tracking-wider text-gray-500">Stil</p>
                 <div className="flex flex-wrap justify-center gap-1.5">
                   {hairStyles.map((h) => (
                     <OptionButton
@@ -166,7 +166,7 @@ export const AvatarPicker = ({ config, onChange, compact = false }) => {
               </div>
               {avatarConfig.hair !== 'm-bald' && (
                 <div>
-                  <p className="mb-1.5 text-center text-[10px] font-medium uppercase tracking-wider text-gray-500">Color</p>
+                  <p className="mb-1.5 text-center text-[10px] font-medium uppercase tracking-wider text-gray-500">Renk</p>
                   <div className="flex flex-wrap justify-center gap-2">
                     {HAIR_COLORS.map((hc) => (
                       <ColorSwatch

@@ -23,7 +23,7 @@ export const Login = () => {
       login(data.user, data.accessToken, data.refreshToken);
       navigate('/dashboard');
     } catch (err) {
-      setError(err.response?.data?.error?.message || 'Login failed');
+      setError(err.response?.data?.error?.message || 'Giriş başarısız');
     } finally {
       setLoading(false);
     }
@@ -36,7 +36,7 @@ export const Login = () => {
           <Link to="/" className="text-3xl font-bold text-white">
             Mood<span className="text-purple-400">ay</span>
           </Link>
-          <p className="mt-2 text-gray-400">Welcome back</p>
+          <p className="mt-2 text-gray-400">Tekrar hoş geldin</p>
         </div>
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-4 rounded-2xl border border-white/10 bg-white/5 p-8 backdrop-blur-sm">
@@ -47,7 +47,7 @@ export const Login = () => {
           )}
 
           <Input
-            label="Email"
+            label="E-posta"
             type="email"
             placeholder="you@example.com"
             value={email}
@@ -56,22 +56,22 @@ export const Login = () => {
           />
 
           <Input
-            label="Password"
+            label="Şifre"
             type="password"
-            placeholder="Enter your password"
+            placeholder="Şifreni gir"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
           />
 
           <Button type="submit" loading={loading} className="mt-2 w-full">
-            Login
+            Giriş Yap
           </Button>
 
           <p className="text-center text-sm text-gray-400">
-            Don't have an account?{' '}
+            Hesabın yok mu?{' '}
             <Link to="/register" className="text-purple-400 hover:text-purple-300">
-              Sign up
+              Kayıt ol
             </Link>
           </p>
         </form>

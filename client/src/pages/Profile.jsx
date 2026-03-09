@@ -68,9 +68,9 @@ export const Profile = () => {
           <div className="text-center">
             <p className="text-lg">
               <span className="mr-2 text-2xl">{config.icon}</span>
-              Currently feeling <span className="font-bold" style={{ color: config.color }}>{config.label}</span>
+              Şu an hissediyor: <span className="font-bold" style={{ color: config.color }}>{config.label}</span>
             </p>
-            <p className="text-sm text-gray-400">Intensity: {currentMood.intensity}/10</p>
+            <p className="text-sm text-gray-400">Yoğunluk: {currentMood.intensity}/10</p>
           </div>
         )}
 
@@ -79,7 +79,7 @@ export const Profile = () => {
 
         {/* Mood History */}
         <div className="w-full max-w-md">
-          <h2 className="mb-3 text-lg font-semibold text-white">Recent Moods</h2>
+          <h2 className="mb-3 text-lg font-semibold text-white">Son Ruh Halleri</h2>
           <div className="flex flex-col gap-2">
             {moodHistory.map((log) => {
               const logConfig = EMOTIONS[log.emotion] || EMOTIONS.calm;
@@ -95,7 +95,7 @@ export const Profile = () => {
                         {logConfig.label}
                       </p>
                       <p className="text-xs text-gray-500">
-                        {new Date(log.createdAt).toLocaleDateString('en-US', {
+                        {new Date(log.createdAt).toLocaleDateString('tr-TR', {
                           weekday: 'short', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit',
                         })}
                       </p>

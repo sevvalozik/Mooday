@@ -6,7 +6,7 @@ export const IntensitySlider = ({ value, onChange, emotion = 'calm' }) => {
   return (
     <div className="flex flex-col gap-2">
       <div className="flex items-center justify-between">
-        <label className="text-sm font-medium text-gray-300">Intensity</label>
+        <label className="text-sm font-medium text-gray-300">Yoğunluk</label>
         <span className="text-sm font-bold" style={{ color }}>{value}/10</span>
       </div>
       <input
@@ -22,8 +22,8 @@ export const IntensitySlider = ({ value, onChange, emotion = 'calm' }) => {
         }}
       />
       <div className="flex justify-between text-xs text-gray-500">
-        <span>Mild</span>
-        <span>Intense</span>
+        <span>Hafif</span>
+        <span>Yoğun</span>
       </div>
     </div>
   );

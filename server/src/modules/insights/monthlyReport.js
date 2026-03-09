@@ -92,6 +92,29 @@ export const generateMonthlyReport = async (userId, year, month) => {
   const averageIntensity =
     Math.round((moodLogs.reduce((sum, l) => sum + l.intensity, 0) / moodLogs.length) * 10) / 10;
 
+  // Daily moods — one entry per day with dominant emotion
+  const dailyMap = {};
+  for (const log of moodLogs) {
+    const day = new Date(log.createdAt).getDate();
+    if (!dailyMap[day]) dailyMap[day] = [];
+    dailyMap[day].push(log);
+  }
+  const daysInMonth = new Date(year, month, 0).getDate();
+  const dailyMoods = [];
+  for (let d = 1; d <= daysInMonth; d++) {
+    const logs = dailyMap[d];
+    if (logs) {
+      // Find most frequent emotion for the day
+      const freq = {};
+      for (const l of logs) freq[l.emotion] = (freq[l.emotion] || 0) + 1;
+      const dominant = Object.entries(freq).sort((a, b) => b[1] - a[1])[0][0];
+      const avgInt = Math.round(logs.reduce((s, l) => s + l.intensity, 0) / logs.length);
+      dailyMoods.push({ day: d, dominantEmotion: dominant, intensity: avgInt, logCount: logs.length });
+    } else {
+      dailyMoods.push({ day: d, dominantEmotion: null, intensity: 0, logCount: 0 });
+    }
+  }
+
   // Streak
   const streak = await prisma.streak.findUnique({ where: { userId } });
 
@@ -102,6 +125,7 @@ export const generateMonthlyReport = async (userId, year, month) => {
     saddestDay,
     weeklyAverages,
     averageIntensity,
+    dailyMoods: dailyMoods.filter((d) => d.dominantEmotion),
     currentStreak: streak?.currentCount || 0,
     longestStreak: streak?.longestCount || 0,
     month,

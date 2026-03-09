@@ -22,7 +22,7 @@ export const MoodLogger = () => {
 
   const handleSubmit = async () => {
     if (!emotion) {
-      toast('Please select an emotion', 'warning');
+      toast('Lütfen bir duygu seç', 'warning');
       return;
     }
 
@@ -34,10 +34,10 @@ export const MoodLogger = () => {
         journal: journal.trim() || undefined,
       });
       addMoodLog(moodLog);
-      toast('Mood logged!', 'success');
+      toast('Ruh halin kaydedildi!', 'success');
       navigate('/profile');
     } catch (err) {
-      toast(err.response?.data?.error?.message || 'Failed to log mood', 'error');
+      toast(err.response?.data?.error?.message || 'Kayıt başarısız', 'error');
     } finally {
       setLoading(false);
     }
@@ -47,7 +47,7 @@ export const MoodLogger = () => {
     <PageWrapper>
       <div className="mx-auto max-w-lg">
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex flex-col gap-6">
-          <h1 className="text-2xl font-bold text-white">How are you feeling?</h1>
+          <h1 className="text-2xl font-bold text-white">Nasıl hissediyorsun?</h1>
 
           {/* Live Preview Sphere */}
           <div className="flex justify-center">
@@ -74,12 +74,12 @@ export const MoodLogger = () => {
           {emotion && (
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.1 }}>
               <label className="mb-1.5 block text-sm font-medium text-gray-300">
-                Journal (optional)
+                Günlük (isteğe bağlı)
               </label>
               <textarea
                 value={journal}
                 onChange={(e) => setJournal(e.target.value)}
-                placeholder="What's on your mind?"
+                placeholder="Aklından ne geçiyor?"
                 rows={3}
                 className="w-full resize-none rounded-lg border border-white/10 bg-white/5 px-4 py-3 text-white placeholder-gray-500 outline-none focus:border-purple-500"
               />
@@ -88,7 +88,7 @@ export const MoodLogger = () => {
 
           {/* Submit */}
           <Button onClick={handleSubmit} loading={loading} disabled={!emotion} size="lg" className="w-full">
-            Log Mood
+            Kaydet
           </Button>
         </motion.div>
       </div>

@@ -23,10 +23,10 @@ export const Navbar = () => {
         {isAuthenticated ? (
           <div className="flex items-center gap-2 sm:gap-4">
             <Link to="/mood/new" className="hidden rounded-lg bg-purple-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-purple-700 sm:block">
-              Log Mood
+              Kaydet
             </Link>
             <Link to="/messages" className="hidden text-gray-400 transition-colors hover:text-white md:block">
-              Messages
+              Mesajlar
             </Link>
             <Link to="/notifications" className="relative text-gray-400 transition-colors hover:text-white">
               <svg className="h-5 w-5 sm:h-6 sm:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -42,16 +42,16 @@ export const Navbar = () => {
               <UserAvatar user={user} size="xs" />
             </Link>
             <button onClick={handleLogout} className="hidden text-sm text-gray-400 transition-colors hover:text-white sm:block">
-              Logout
+              Çıkış
             </button>
           </div>
         ) : (
           <div className="flex items-center gap-3">
             <Link to="/login" className="text-sm text-gray-300 transition-colors hover:text-white">
-              Login
+              Giriş
             </Link>
             <Link to="/register" className="rounded-lg bg-purple-600 px-3 py-1.5 text-sm font-medium text-white transition-colors hover:bg-purple-700 sm:px-4 sm:py-2">
-              Sign Up
+              Kayıt Ol
             </Link>
           </div>
         )}

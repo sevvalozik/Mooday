@@ -5,7 +5,7 @@ import { MoodSphere } from '../components/sphere/MoodSphere.jsx';
 import { EMOTIONS } from '../utils/emotionConfig.js';
 
 const CYCLE_EMOTIONS = ['happiness', 'sadness', 'calm', 'excitement', 'anxiety', 'hopeful'];
-const SPHERE_STYLES = ['default', 'crystal', 'nebula', 'wireframe'];
+const SPHERE_STYLES = ['default', 'crystal'];
 
 const FeatureIcon = ({ type }) => {
   const paths = {
@@ -24,18 +24,18 @@ const FeatureIcon = ({ type }) => {
 };
 
 const features = [
-  { title: 'Living 3D Sphere', desc: 'Your emotions visualized as a breathing, animated sphere with custom GLSL shaders', iconType: 'sphere' },
-  { title: 'Friend Galaxy', desc: "See your friends' emotional states in an interactive 3D constellation", iconType: 'galaxy' },
-  { title: 'Mood Insights', desc: 'AI-powered weekly reports, trend detection, and emotional compatibility', iconType: 'chart' },
-  { title: 'Real-time Reactions', desc: 'Send hugs, cheers, and high-fives to friends in real-time', iconType: 'heart' },
-  { title: 'Meme Sharing', desc: 'Express yourself with mood memes — send the perfect reaction to friends', iconType: 'chat' },
-  { title: 'Music Sharing', desc: 'Share songs that match your mood with friends', iconType: 'music' },
+  { title: 'Canlı 3D Küre', desc: 'Duyguların özel GLSL shader\'larla nefes alan, animasyonlu bir küre olarak görselleştirilir', iconType: 'sphere' },
+  { title: 'Arkadaş Galaksisi', desc: 'Arkadaşlarının duygusal durumlarını interaktif 3D takımyıldızında gör', iconType: 'galaxy' },
+  { title: 'Duygu Analizleri', desc: 'Yapay zeka destekli haftalık raporlar, trend analizi ve duygusal uyumluluk', iconType: 'chart' },
+  { title: 'Anlık Tepkiler', desc: 'Arkadaşlarına gerçek zamanlı sarılma, tezahürat ve çak gönder', iconType: 'heart' },
+  { title: 'Meme Paylaşımı', desc: 'Ruh haline uygun memelerle kendini ifade et', iconType: 'chat' },
+  { title: 'Müzik Paylaşımı', desc: 'Ruh haline uygun şarkıları arkadaşlarınla paylaş', iconType: 'music' },
 ];
 
 const stats = [
-  { value: '8', label: 'Emotions' },
-  { value: '4', label: 'Sphere Styles' },
-  { value: '∞', label: 'Moods to Track' },
+  { value: '8', label: 'Duygu' },
+  { value: '2', label: 'Küre Stili' },
+  { value: '∞', label: 'Takip Edilecek' },
 ];
 
 export const Landing = () => {
@@ -87,10 +87,10 @@ export const Landing = () => {
         </span>
         <div className="flex items-center gap-3">
           <Link to="/login" className="text-sm text-gray-300 transition-colors hover:text-white">
-            Login
+            Giriş Yap
           </Link>
           <Link to="/register" className="rounded-lg bg-purple-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-purple-500">
-            Sign Up Free
+            Ücretsiz Kayıt Ol
           </Link>
         </div>
       </nav>
@@ -110,7 +110,7 @@ export const Landing = () => {
             className="mb-6"
           >
             <span className="rounded-full border border-purple-500/30 bg-purple-500/10 px-4 py-1.5 text-sm text-purple-300">
-              Your emotions, alive in 3D
+              Duyguların, 3D'de canlı
             </span>
           </motion.div>
 
@@ -118,7 +118,7 @@ export const Landing = () => {
             Mood<span className="bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">ay</span>
           </h1>
           <p className="mb-10 max-w-md text-base text-gray-400 sm:max-w-lg sm:text-lg">
-            Track your mood as a living 3D sphere, connect with friends in a galaxy, and discover your emotional patterns.
+            Ruh halini canlı bir 3D küre olarak takip et, arkadaşlarınla galakside buluş ve duygusal kalıplarını keşfet.
           </p>
 
           {/* Sphere with emotion label */}
@@ -163,13 +163,13 @@ export const Landing = () => {
               to="/register"
               className="group relative overflow-hidden rounded-xl bg-purple-600 px-8 py-3.5 text-base font-semibold text-white transition-all hover:bg-purple-500 hover:shadow-lg hover:shadow-purple-500/25 sm:text-lg"
             >
-              <span className="relative z-10">Start Tracking</span>
+              <span className="relative z-10">Başla</span>
             </Link>
             <Link
               to="/login"
               className="rounded-xl border border-white/20 px-8 py-3.5 text-base font-semibold text-white transition-all hover:bg-white/5 sm:text-lg"
             >
-              Login
+              Giriş Yap
             </Link>
           </div>
         </motion.div>
@@ -214,10 +214,10 @@ export const Landing = () => {
           className="mb-12 text-center sm:mb-16"
         >
           <h2 className="mb-3 text-2xl font-bold text-white sm:text-3xl">
-            Experience Your Emotions
+            Duygularını Deneyimle
           </h2>
           <p className="mx-auto max-w-md text-gray-500">
-            More than tracking — a visual, social, and insightful way to understand your moods.
+            Sadece takip değil — ruh hallerini anlamanın görsel, sosyal ve analitik yolu.
           </p>
         </motion.div>
 
@@ -249,13 +249,13 @@ export const Landing = () => {
           viewport={{ once: true }}
           className="mx-auto max-w-2xl rounded-3xl border border-purple-500/20 bg-gradient-to-br from-purple-900/20 to-pink-900/10 p-8 text-center backdrop-blur-sm sm:p-12"
         >
-          <h2 className="mb-3 text-2xl font-bold text-white sm:text-3xl">Ready to see your mood come alive?</h2>
-          <p className="mb-6 text-gray-400">Join Mooday and start visualizing your emotional journey today.</p>
+          <h2 className="mb-3 text-2xl font-bold text-white sm:text-3xl">Ruh halinin canlanmasını görmeye hazır mısın?</h2>
+          <p className="mb-6 text-gray-400">Mooday'e katıl ve duygusal yolculuğunu görselleştirmeye başla.</p>
           <Link
             to="/register"
             className="inline-block rounded-xl bg-purple-600 px-8 py-3.5 text-lg font-semibold text-white transition-all hover:bg-purple-500 hover:shadow-lg hover:shadow-purple-500/25"
           >
-            Get Started Free
+            Ücretsiz Başla
           </Link>
         </motion.div>
       </section>
@@ -263,7 +263,7 @@ export const Landing = () => {
       {/* Footer */}
       <footer className="relative z-10 border-t border-white/5 px-4 py-8 text-center">
         <p className="text-sm text-gray-600">
-          Mooday — Social Mood Tracking Platform
+          Mooday — Sosyal Ruh Hali Takip Platformu
         </p>
       </footer>
     </div>

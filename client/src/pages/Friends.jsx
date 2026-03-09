@@ -56,11 +56,11 @@ export const Friends = () => {
   const handleSendRequest = async (userId) => {
     try {
       await friendService.sendRequest(userId);
-      setActionMsg('Friend request sent!');
+      setActionMsg('Arkadaşlık isteği gönderildi!');
       setSearchResults((prev) => prev.filter((u) => u.id !== userId));
       setTimeout(() => setActionMsg(''), 3000);
     } catch (err) {
-      setActionMsg(err.response?.data?.error?.message || 'Failed to send request');
+      setActionMsg(err.response?.data?.error?.message || 'İstek gönderilemedi');
       setTimeout(() => setActionMsg(''), 3000);
     }
   };
@@ -71,10 +71,10 @@ export const Friends = () => {
       setPendingRequests(pendingRequests.filter((r) => r.friendshipId !== friendshipId));
       const updatedFriends = await friendService.getFriends();
       setFriends(updatedFriends);
-      setActionMsg('Friend request accepted!');
+      setActionMsg('Arkadaşlık isteği kabul edildi!');
       setTimeout(() => setActionMsg(''), 3000);
     } catch (err) {
-      setActionMsg('Failed to accept request');
+      setActionMsg('İstek kabul edilemedi');
       setTimeout(() => setActionMsg(''), 3000);
     }
   };
@@ -87,7 +87,7 @@ export const Friends = () => {
   return (
     <PageWrapper>
       <div className="flex flex-col gap-6">
-        <h1 className="text-2xl font-bold text-white">Friends</h1>
+        <h1 className="text-2xl font-bold text-white">Arkadaşlar</h1>
 
         {/* Action message */}
         <AnimatePresence>
@@ -107,7 +107,7 @@ export const Friends = () => {
         <div className="relative">
           <input
             type="text"
-            placeholder="Search users by username or name..."
+            placeholder="Kullanıcı adı veya isimle ara..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-white placeholder-gray-500 outline-none focus:border-purple-500"
@@ -120,7 +120,7 @@ export const Friends = () => {
         {/* Search Results */}
         {searchResults.length > 0 && (
           <div className="rounded-xl border border-white/10 bg-white/5 p-4">
-            <h3 className="mb-3 text-sm font-medium text-gray-400">Search Results</h3>
+            <h3 className="mb-3 text-sm font-medium text-gray-400">Arama Sonuçları</h3>
             <div className="flex flex-col gap-2">
               {searchResults.map((user) => (
                 <div key={user.id} className="flex items-center justify-between rounded-lg bg-white/5 px-4 py-3">
@@ -135,7 +135,7 @@ export const Friends = () => {
                     onClick={() => handleSendRequest(user.id)}
                     className="rounded-lg bg-purple-600 px-4 py-1.5 text-sm font-medium text-white transition-colors hover:bg-purple-500"
                   >
-                    Add Friend
+                    Ekle
                   </button>
                 </div>
               ))}
@@ -151,7 +151,7 @@ export const Friends = () => {
               tab === 'friends' ? 'bg-purple-600 text-white' : 'bg-white/5 text-gray-400 hover:text-white'
             }`}
           >
-            Friends ({friends.length})
+            Arkadaşlar ({friends.length})
           </button>
           <button
             onClick={() => setTab('requests')}
@@ -159,7 +159,7 @@ export const Friends = () => {
               tab === 'requests' ? 'bg-purple-600 text-white' : 'bg-white/5 text-gray-400 hover:text-white'
             }`}
           >
-            Requests {pendingRequests.length > 0 && `(${pendingRequests.length})`}
+            İstekler {pendingRequests.length > 0 && `(${pendingRequests.length})`}
           </button>
         </div>
 
@@ -167,11 +167,11 @@ export const Friends = () => {
         {tab === 'friends' && (
           <div className="flex flex-col gap-2">
             {loading ? (
-              <div className="py-8 text-center text-gray-500">Loading...</div>
+              <div className="py-8 text-center text-gray-500">Yükleniyor...</div>
             ) : friends.length === 0 ? (
               <div className="py-12 text-center text-gray-500">
-                <p className="text-lg">No friends yet</p>
-                <p className="mt-1 text-sm">Search for users above to add friends</p>
+                <p className="text-lg">Henüz arkadaşın yok</p>
+                <p className="mt-1 text-sm">Arkadaş eklemek için yukarıdan ara</p>
               </div>
             ) : (
               friends.map((friend) => (
@@ -198,7 +198,7 @@ export const Friends = () => {
         {tab === 'requests' && (
           <div className="flex flex-col gap-2">
             {pendingRequests.length === 0 ? (
-              <div className="py-12 text-center text-gray-500">No pending requests</div>
+              <div className="py-12 text-center text-gray-500">Bekleyen istek yok</div>
             ) : (
               pendingRequests.map((req) => (
                 <div key={req.friendshipId} className="flex items-center justify-between rounded-xl border border-white/10 bg-white/5 px-4 py-3">
@@ -213,7 +213,7 @@ export const Friends = () => {
                     onClick={() => handleAccept(req.friendshipId)}
                     className="rounded-lg bg-green-600 px-4 py-1.5 text-sm font-medium text-white transition-colors hover:bg-green-500"
                   >
-                    Accept
+                    Kabul Et
                   </button>
                 </div>
               ))

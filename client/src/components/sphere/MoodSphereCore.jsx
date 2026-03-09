@@ -88,6 +88,5 @@ const SphereInner = ({ emotion, intensity, size, style }) => {
 };
 
 export const MoodSphereCore = ({ emotion = 'calm', intensity = 5, size = 1, style = 'default' }) => {
-  // Key on wrapper forces full remount when style changes — clean shader swap
-  return <SphereInner key={style} emotion={emotion} intensity={intensity} size={size} style={style} />;
+  return <SphereInner emotion={emotion} intensity={intensity} size={size} style={style} />;
 };
