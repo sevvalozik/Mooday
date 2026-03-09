@@ -74,51 +74,45 @@ export const MonthlySummary = () => {
                 <div className="flex flex-col items-center gap-4">
                   <h2 className="text-xl font-bold text-white">Ayın Galaksisi</h2>
                   <p className="text-sm text-gray-400">Her küre bir günü temsil ediyor</p>
-                  <div className="relative mx-auto h-72 w-72">
+                  <div className="relative mx-auto" style={{ height: 320, width: 320 }}>
                     {(data.dailyMoods || []).map((day, i) => {
-                      const total = data.dailyMoods.length || 30;
-                      const angle = (i / total) * Math.PI * 2 - Math.PI / 2;
-                      const ring = i < 10 ? 0 : i < 22 ? 1 : 2;
-                      const radius = 40 + ring * 38;
-                      const x = 136 + Math.cos(angle + ring * 0.3) * radius;
-                      const y = 136 + Math.sin(angle + ring * 0.3) * radius;
+                      const total = data.dailyMoods.length || 1;
+                      // Spiral layout — golden angle for even distribution
+                      const goldenAngle = Math.PI * (3 - Math.sqrt(5));
+                      const angle = i * goldenAngle;
+                      const radius = 20 + Math.sqrt(i / total) * 120;
+                      const x = 160 + Math.cos(angle) * radius;
+                      const y = 160 + Math.sin(angle) * radius;
                       const emotion = day.dominantEmotion || 'calm';
                       const cfg = EMOTIONS[emotion] || EMOTIONS.calm;
-                      const size = 10 + (day.intensity || 5) * 0.8;
+                      const size = 22 + (day.intensity || 5) * 2;
                       return (
                         <motion.div
                           key={i}
                           initial={{ scale: 0, opacity: 0 }}
-                          animate={{ scale: 1, opacity: 1 }}
-                          transition={{ delay: i * 0.04 }}
+                          animate={{ scale: 1, opacity: 0.9 }}
+                          transition={{ delay: i * 0.05, type: 'spring', stiffness: 200 }}
                           className="absolute flex items-center justify-center rounded-full"
                           style={{
                             left: x - size / 2,
                             top: y - size / 2,
                             width: size,
                             height: size,
-                            backgroundColor: cfg.color,
-                            boxShadow: `0 0 ${size}px ${cfg.color}60`,
+                            background: `radial-gradient(circle at 35% 35%, ${cfg.color}ee, ${cfg.color}88)`,
+                            boxShadow: `0 0 ${size * 0.8}px ${cfg.color}50, inset 0 -2px 4px ${cfg.color}40`,
                           }}
                           title={`Gün ${day.day}: ${cfg.label}`}
                         >
-                          <span className="text-[6px]">{cfg.icon}</span>
+                          <span style={{ fontSize: Math.max(10, size * 0.4) }}>{cfg.icon}</span>
                         </motion.div>
                       );
                     })}
-                    {/* Center label */}
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <div className="text-center">
-                        <p className="text-xs text-gray-500">{data.totalLogs}</p>
-                        <p className="text-[10px] text-gray-600">kayıt</p>
-                      </div>
-                    </div>
                   </div>
                   {/* Legend */}
-                  <div className="flex flex-wrap justify-center gap-1.5">
+                  <div className="flex flex-wrap justify-center gap-2 mt-2">
                     {Object.entries(EMOTIONS).map(([key, cfg]) => (
-                      <span key={key} className="flex items-center gap-1 text-[10px] text-gray-500">
-                        <span className="inline-block h-2 w-2 rounded-full" style={{ backgroundColor: cfg.color }} />
+                      <span key={key} className="flex items-center gap-1 text-xs text-gray-400">
+                        <span className="inline-block h-2.5 w-2.5 rounded-full" style={{ backgroundColor: cfg.color }} />
                         {cfg.label}
                       </span>
                     ))}
@@ -193,7 +187,7 @@ export const MonthlySummary = () => {
               {/* Slide 5: Streak */}
               {slide === 5 && (
                 <div className="flex flex-col items-center gap-4 text-center">
-                  <h2 className="text-xl font-bold text-white">Serin</h2>
+                  <h2 className="text-xl font-bold text-white">Seri</h2>
                   <p className="text-6xl">🔥</p>
                   <p className="text-4xl font-bold text-orange-400">{data.currentStreak} gün</p>
                   <p className="text-gray-400">En uzun seri: {data.longestStreak} gün</p>

@@ -4,21 +4,31 @@ import { detectDayPatterns, detectTimePatterns, detectTrend } from './patterns.j
 import { emotionalCompatibility } from './compatibility.js';
 import { generateMonthlyReport } from './monthlyReport.js';
 
+const DAY_TR = {
+  Monday: 'Pazartesi',
+  Tuesday: 'Salı',
+  Wednesday: 'Çarşamba',
+  Thursday: 'Perşembe',
+  Friday: 'Cuma',
+  Saturday: 'Cumartesi',
+  Sunday: 'Pazar',
+};
+
 const generateWeatherReport = (trend, dayPatterns) => {
   const trendText =
     trend.direction === 'up'
-      ? `trending upward (+${trend.percentage}%)`
+      ? `yükselişte (+${trend.percentage}%) 🌤️`
       : trend.direction === 'down'
-        ? `trending downward (-${trend.percentage}%)`
-        : 'holding steady';
+        ? `düşüşte (-${trend.percentage}%) 🌧️`
+        : 'dengeli ☁️';
 
   const bestDay = dayPatterns
     .filter((d) => d.avgValence !== null)
     .sort((a, b) => b.avgValence - a.avgValence)[0];
 
-  const bestDayText = bestDay ? `You tend to feel best on ${bestDay.day}s.` : '';
+  const bestDayText = bestDay ? `En iyi günün genelde ${DAY_TR[bestDay.day] || bestDay.day}.` : '';
 
-  return `Your emotional forecast is ${trendText} this week. ${bestDayText}`;
+  return `Bu haftaki ruh halin ${trendText} ${bestDayText}`;
 };
 
 export const getWeeklyInsights = async (userId) => {

@@ -78,10 +78,16 @@ export const Dashboard = () => {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-2xl font-bold text-white">
-              Merhaba, {user?.displayName || ''} 👋
+              {(() => {
+                const hour = new Date().getHours();
+                if (hour < 6) return 'İyi geceler';
+                if (hour < 12) return 'Günaydın';
+                if (hour < 18) return 'İyi günler';
+                return 'İyi akşamlar';
+              })()}, <span className="text-purple-400">{user?.displayName || ''}</span> ✨
             </h1>
-            <p className="text-gray-400">
-              {insights?.weatherReport || 'Bugün nasıl hissediyorsun?'}
+            <p className="text-sm text-gray-400 mt-1">
+              {insights?.weatherReport || 'Bugün nasıl hissediyorsun? 💜'}
             </p>
           </div>
           <Link
