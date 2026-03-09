@@ -18,7 +18,7 @@ const BACKGROUND_MAP = {
   hopeful: SunEffect,
 };
 
-const ThemeCelestial = () => {
+const useTheme = () => {
   const [theme, setTheme] = useState(document.documentElement.getAttribute('data-theme') || 'dark');
 
   useEffect(() => {
@@ -29,42 +29,48 @@ const ThemeCelestial = () => {
     return () => observer.disconnect();
   }, []);
 
+  return theme;
+};
+
+export const ThemeCelestial = () => {
+  const theme = useTheme();
+
   if (theme === 'light') {
     return (
-      <>
-        {/* Sun for light mode */}
-        <div className="absolute -top-20 right-[10%] h-40 w-40 rounded-full"
+      <div className="fixed inset-0 pointer-events-none" style={{ zIndex: 1 }}>
+        {/* Sun glow outer */}
+        <div className="absolute -top-16 right-[8%] h-48 w-48 rounded-full"
           style={{
-            background: 'radial-gradient(circle at 50% 50%, rgba(255,220,50,0.6) 0%, rgba(255,180,0,0.3) 40%, rgba(255,140,0,0.1) 65%, transparent 80%)',
+            background: 'radial-gradient(circle, rgba(255,210,50,0.5) 0%, rgba(255,170,0,0.2) 40%, rgba(255,140,0,0.05) 65%, transparent 80%)',
             animation: 'themeSunPulse 5s ease-in-out infinite',
-            filter: 'blur(1px)',
           }}
         />
-        <div className="absolute -top-10 right-[12%] h-28 w-28 rounded-full"
+        {/* Sun core */}
+        <div className="absolute -top-4 right-[11%] h-28 w-28 rounded-full"
           style={{
-            background: 'radial-gradient(circle, rgba(255,235,100,0.8) 0%, rgba(255,200,50,0.4) 50%, transparent 75%)',
+            background: 'radial-gradient(circle, rgba(255,240,120,0.9) 0%, rgba(255,210,60,0.5) 40%, transparent 70%)',
             animation: 'themeSunPulse 5s ease-in-out 0.5s infinite',
           }}
         />
-        {/* Warm rays */}
-        <div className="absolute top-0 right-0 h-80 w-80 opacity-20"
-          style={{ background: 'radial-gradient(circle at 70% 10%, rgba(255,200,50,0.5), transparent 60%)' }}
+        {/* Warm light wash on page */}
+        <div className="absolute top-0 right-0 h-96 w-96 opacity-25"
+          style={{ background: 'radial-gradient(circle at 75% 5%, rgba(255,200,50,0.6), transparent 55%)' }}
         />
         <style>{`
           @keyframes themeSunPulse {
             0%, 100% { transform: scale(1); opacity: 1; }
-            50% { transform: scale(1.1); opacity: 0.85; }
+            50% { transform: scale(1.08); opacity: 0.85; }
           }
         `}</style>
-      </>
+      </div>
     );
   }
 
   if (theme === 'dark') {
     return (
-      <>
-        {/* Moon for dark mode */}
-        <div className="absolute top-12 right-[12%] h-24 w-24 rounded-full"
+      <div className="fixed inset-0 pointer-events-none" style={{ zIndex: 1 }}>
+        {/* Moon */}
+        <div className="absolute top-10 right-[10%] h-24 w-24 rounded-full"
           style={{
             background: 'radial-gradient(circle at 35% 35%, #f0f0f0 0%, #d4d4d8 40%, #a1a1aa 80%)',
             boxShadow: '0 0 50px rgba(200,200,230,0.15), 0 0 100px rgba(200,200,230,0.08)',
@@ -73,15 +79,15 @@ const ThemeCelestial = () => {
           }}
         />
         {/* Moon craters */}
-        <div className="absolute top-16 right-[14%] h-4 w-4 rounded-full opacity-10"
-          style={{ background: 'radial-gradient(circle, #888, transparent)' }}
+        <div className="absolute top-14 right-[12%] h-4 w-4 rounded-full"
+          style={{ background: 'radial-gradient(circle, rgba(136,136,136,0.3), transparent)', opacity: 0.2 }}
         />
-        <div className="absolute top-20 right-[16%] h-3 w-3 rounded-full opacity-8"
-          style={{ background: 'radial-gradient(circle, #999, transparent)' }}
+        <div className="absolute top-[4.5rem] right-[14%] h-3 w-3 rounded-full"
+          style={{ background: 'radial-gradient(circle, rgba(150,150,150,0.3), transparent)', opacity: 0.15 }}
         />
-        {/* Moon light wash */}
-        <div className="absolute top-0 right-0 h-60 w-60 opacity-10"
-          style={{ background: 'radial-gradient(circle at 80% 15%, rgba(200,200,240,0.4), transparent 60%)' }}
+        {/* Moon glow wash */}
+        <div className="absolute top-0 right-0 h-64 w-64 opacity-10"
+          style={{ background: 'radial-gradient(circle at 80% 12%, rgba(200,200,240,0.5), transparent 55%)' }}
         />
         <style>{`
           @keyframes themeMoonGlow {
@@ -89,11 +95,10 @@ const ThemeCelestial = () => {
             50% { opacity: 0.4; box-shadow: 0 0 70px rgba(200,200,230,0.25); }
           }
         `}</style>
-      </>
+      </div>
     );
   }
 
-  // Cosmic/Nebula — no extra celestial
   return null;
 };
 
@@ -104,7 +109,6 @@ export const MoodBackground = ({ emotion }) => {
     <div className="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
       <div className="absolute inset-0 bg-gray-950" />
       {EffectComponent && <EffectComponent />}
-      <ThemeCelestial />
     </div>
   );
 };

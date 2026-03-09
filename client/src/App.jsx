@@ -19,6 +19,7 @@ import { AvatarSetup } from './pages/AvatarSetup.jsx';
 import { useSocket } from './hooks/useSocket.js';
 import { useAuthStore } from './stores/authStore.js';
 import { loadSavedTheme } from './utils/themes.js';
+import { ThemeCelestial } from './components/effects/MoodBackground.jsx';
 import api from './services/api.js';
 
 export default function App() {
@@ -45,6 +46,7 @@ export default function App() {
   return (
     <>
       <ToastContainer />
+      <ThemeCelestial />
       <Routes>
         <Route path="/" element={<Landing />} />
         <Route path="/login" element={<Login />} />
