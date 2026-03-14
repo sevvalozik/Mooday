@@ -7,7 +7,7 @@ export const RainEffect = () => {
       left: `${Math.random() * 100}%`,
       delay: `${Math.random() * 2}s`,
       duration: `${0.6 + Math.random() * 0.6}s`,
-      opacity: 0.08 + Math.random() * 0.2,
+      opacity: 0.1 + Math.random() * 0.25,
       height: 10 + Math.random() * 15,
     })), []);
 
@@ -22,12 +22,12 @@ export const RainEffect = () => {
 
   return (
     <>
-      <div className="absolute inset-0 bg-gradient-to-b from-blue-950/30 via-slate-950 to-gray-950" />
+      <div className="absolute inset-0 bg-gradient-to-b from-blue-950/35 via-slate-950 to-gray-950" />
 
       {/* Fog layer */}
-      <div className="absolute inset-0 opacity-10"
+      <div className="absolute inset-0 opacity-15"
         style={{
-          background: 'radial-gradient(ellipse at 50% 80%, rgba(65, 105, 225, 0.3), transparent 70%)',
+          background: 'radial-gradient(ellipse at 50% 80%, rgba(65, 105, 225, 0.4), transparent 65%), radial-gradient(ellipse at 30% 50%, rgba(70, 100, 200, 0.2), transparent 50%)',
           animation: 'fogDrift 10s ease-in-out infinite alternate',
         }}
       />
@@ -41,7 +41,7 @@ export const RainEffect = () => {
             left: drop.left,
             height: `${drop.height}%`,
             opacity: drop.opacity,
-            background: 'linear-gradient(to bottom, transparent, rgba(100, 149, 237, 0.4), transparent)',
+            background: 'linear-gradient(to bottom, transparent, rgba(100, 149, 237, 0.5), transparent)',
             animation: `rain ${drop.duration} linear ${drop.delay} infinite`,
           }}
         />
@@ -55,7 +55,7 @@ export const RainEffect = () => {
           style={{
             left: r.left,
             bottom: r.bottom,
-            border: '1px solid rgba(100, 149, 237, 0.2)',
+            border: '1px solid rgba(100, 149, 237, 0.25)',
             animation: `ripple ${r.duration} ease-out ${r.delay} infinite`,
           }}
         />
@@ -67,7 +67,7 @@ export const RainEffect = () => {
           100% { transform: translateY(700%); }
         }
         @keyframes ripple {
-          0% { transform: scaleX(0.5) scaleY(1); opacity: 0.3; }
+          0% { transform: scaleX(0.5) scaleY(1); opacity: 0.4; }
           100% { transform: scaleX(2) scaleY(0.3); opacity: 0; }
         }
         @keyframes fogDrift {
