@@ -106,7 +106,7 @@ export const MoodBackground = ({ emotion }) => {
   const EffectComponent = emotion ? BACKGROUND_MAP[emotion] : null;
 
   return (
-    <div className="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
+    <div className="fixed inset-0 overflow-hidden pointer-events-none" style={{ zIndex: 0 }}>
       <div className="absolute inset-0 bg-gray-950" />
       {EffectComponent && <EffectComponent />}
     </div>

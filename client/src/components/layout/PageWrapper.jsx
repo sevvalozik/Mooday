@@ -27,7 +27,7 @@ export const PageWrapper = ({ children, showSidebar = true }) => {
       <MoodBackground emotion={currentMood?.emotion} />
       <Navbar />
       {showSidebar && <Sidebar />}
-      <main className={`pt-14 sm:pt-16 ${showSidebar ? 'lg:pl-56' : ''}`}>
+      <main className={`relative pt-14 sm:pt-16 ${showSidebar ? 'lg:pl-56' : ''}`} style={{ zIndex: 2 }}>
         <motion.div
           key={location.pathname}
           variants={pageVariants}
