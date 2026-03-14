@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { PageWrapper } from '../components/layout/PageWrapper.jsx';
 import { MoodSphere } from '../components/sphere/MoodSphere.jsx';
@@ -79,7 +80,12 @@ export const Profile = () => {
 
         {/* Mood History */}
         <div className="w-full max-w-md">
-          <h2 className="mb-3 text-lg font-semibold text-white">Son Ruh Halleri</h2>
+          <div className="flex items-center justify-between mb-3">
+            <h2 className="text-lg font-semibold text-white">Son Ruh Halleri</h2>
+            <Link to="/history" className="text-xs font-medium text-purple-400 hover:text-purple-300 transition-colors">
+              Tümünü Gör →
+            </Link>
+          </div>
           <div className="flex flex-col gap-2">
             {moodHistory.map((log) => {
               const logConfig = EMOTIONS[log.emotion] || EMOTIONS.calm;

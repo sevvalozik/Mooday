@@ -1,8 +1,8 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { PageWrapper } from '../components/layout/PageWrapper.jsx';
 import { useNotificationStore } from '../stores/notificationStore.js';
-import api from '../services/api.js';
+import * as notificationService from '../services/notificationService.js';
 
 const TYPE_STYLE = {
   friend_request: { bg: 'bg-blue-500/15', text: 'text-blue-400', letter: 'FR' },
@@ -17,32 +17,79 @@ const TYPE_STYLE = {
 const fallbackStyle = { bg: 'bg-gray-500/15', text: 'text-gray-400', letter: 'N' };
 
 export const Notifications = () => {
-  const { notifications, setNotifications, markAsRead } = useNotificationStore();
+  const { setNotifications, markAsRead: storeMarkAsRead } = useNotificationStore();
+  const [items, setItems] = useState([]);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const load = async () => {
-      try {
-        // We'd need a notification endpoint — for now, use what's in the store
-        // If you add GET /api/notifications endpoint later, fetch here
-      } catch {
-        // silent
+  const load = async (p = 1) => {
+    try {
+      const res = await notificationService.getNotifications(p, 30);
+      const data = res.data || [];
+      if (p === 1) {
+        setItems(data);
+        setNotifications(data);
+      } else {
+        setItems((prev) => [...prev, ...data]);
       }
-    };
-    load();
-  }, []);
-
-  const handleClick = (notification) => {
-    if (!notification.read) {
-      markAsRead(notification.id);
+      setTotalPages(res.pagination?.totalPages || 1);
+    } catch {
+      // If endpoint not available, keep store data
+    } finally {
+      setLoading(false);
     }
   };
 
+  useEffect(() => {
+    load(1);
+  }, []);
+
+  const handleClick = async (notification) => {
+    if (!notification.read) {
+      storeMarkAsRead(notification.id);
+      setItems((prev) => prev.map((n) => (n.id === notification.id ? { ...n, read: true } : n)));
+      try {
+        await notificationService.markAsRead(notification.id);
+      } catch {
+        // silent
+      }
+    }
+  };
+
+  const handleMarkAllRead = async () => {
+    setItems((prev) => prev.map((n) => ({ ...n, read: true })));
+    try {
+      await notificationService.markAllAsRead();
+    } catch {
+      // silent
+    }
+  };
+
+  const handleLoadMore = () => {
+    const next = page + 1;
+    setPage(next);
+    load(next);
+  };
+
+  const unreadCount = items.filter((n) => !n.read).length;
+
   return (
     <PageWrapper>
-      <h1 className="mb-6 text-2xl font-bold text-white">Bildirimler</h1>
+      <div className="flex items-center justify-between mb-6">
+        <h1 className="text-2xl font-bold text-white">Bildirimler</h1>
+        {unreadCount > 0 && (
+          <button
+            onClick={handleMarkAllRead}
+            className="rounded-lg bg-white/5 px-3 py-1.5 text-xs font-medium text-purple-400 transition-colors hover:bg-purple-600/20"
+          >
+            Tümünü okundu işaretle
+          </button>
+        )}
+      </div>
 
       <div className="flex flex-col gap-2">
-        {notifications.length === 0 && (
+        {!loading && items.length === 0 && (
           <div className="flex flex-col items-center py-16 text-center">
             <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-white/5">
               <svg className="h-6 w-6 text-gray-500" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
@@ -53,14 +100,14 @@ export const Notifications = () => {
           </div>
         )}
 
-        {notifications.map((n, i) => {
+        {items.map((n, i) => {
           const style = TYPE_STYLE[n.type] || fallbackStyle;
           return (
             <motion.div
               key={n.id || i}
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: i * 0.05 }}
+              transition={{ delay: Math.min(i * 0.03, 0.5) }}
               onClick={() => handleClick(n)}
               className={`flex cursor-pointer items-start gap-3 rounded-xl border px-4 py-3 transition-colors ${
                 n.read
@@ -86,6 +133,15 @@ export const Notifications = () => {
             </motion.div>
           );
         })}
+
+        {page < totalPages && (
+          <button
+            onClick={handleLoadMore}
+            className="mt-4 rounded-lg bg-white/5 px-4 py-2.5 text-sm font-medium text-gray-400 transition-colors hover:bg-white/10 hover:text-white"
+          >
+            Daha fazla yükle
+          </button>
+        )}
       </div>
     </PageWrapper>
   );

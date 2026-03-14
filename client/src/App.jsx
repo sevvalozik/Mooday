@@ -16,6 +16,7 @@ import { Settings } from './pages/Settings.jsx';
 import { Notifications } from './pages/Notifications.jsx';
 import { Friends } from './pages/Friends.jsx';
 import { AvatarSetup } from './pages/AvatarSetup.jsx';
+import { MoodHistory } from './pages/MoodHistory.jsx';
 import { useSocket } from './hooks/useSocket.js';
 import { useAuthStore } from './stores/authStore.js';
 import { loadSavedTheme } from './utils/themes.js';
@@ -62,6 +63,7 @@ export default function App() {
         <Route path="/groups" element={<ProtectedRoute><Groups /></ProtectedRoute>} />
         <Route path="/summary" element={<ProtectedRoute><MonthlySummary /></ProtectedRoute>} />
         <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
+        <Route path="/history" element={<ProtectedRoute><MoodHistory /></ProtectedRoute>} />
         <Route path="/notifications" element={<ProtectedRoute><Notifications /></ProtectedRoute>} />
       </Routes>
     </>

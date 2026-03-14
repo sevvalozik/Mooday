@@ -162,7 +162,7 @@ export const FriendGalaxy = ({ friends = [], userMood }) => {
   const navigate = useNavigate();
 
   return (
-    <div className="h-[500px] w-full rounded-2xl overflow-hidden">
+    <div className="h-[320px] sm:h-[400px] md:h-[500px] w-full rounded-2xl overflow-hidden">
       <Canvas camera={{ position: [0, 4, 8], fov: 50 }}>
         <Suspense fallback={null}>
           <GalaxyScene

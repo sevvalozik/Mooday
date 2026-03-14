@@ -23,6 +23,7 @@ import messageRoutes from './modules/social/message.routes.js';
 import groupRoutes from './modules/social/group.routes.js';
 import musicRoutes from './modules/social/music.routes.js';
 import insightsRoutes from './modules/insights/insights.routes.js';
+import notificationRoutes from './modules/social/notification.routes.js';
 
 // Catch crashes
 process.on('uncaughtException', (err) => {
@@ -68,6 +69,7 @@ app.use('/api/messages', messageRoutes);
 app.use('/api/groups', groupRoutes);
 app.use('/api/music', musicRoutes);
 app.use('/api/insights', insightsRoutes);
+app.use('/api/notifications', notificationRoutes);
 
 // Serve client build in production
 if (config.nodeEnv === 'production') {
