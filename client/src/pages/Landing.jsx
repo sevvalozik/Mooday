@@ -4,6 +4,18 @@ import { motion } from 'framer-motion';
 import { MoodSphere } from '../components/sphere/MoodSphere.jsx';
 import { EMOTIONS } from '../utils/emotionConfig.js';
 
+const useTheme = () => {
+  const [theme, setTheme] = useState(document.documentElement.getAttribute('data-theme') || 'dark');
+  useEffect(() => {
+    const observer = new MutationObserver(() => {
+      setTheme(document.documentElement.getAttribute('data-theme') || 'dark');
+    });
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+    return () => observer.disconnect();
+  }, []);
+  return theme;
+};
+
 const CYCLE_EMOTIONS = ['happiness', 'sadness', 'calm', 'excitement', 'anxiety', 'hopeful'];
 const SPHERE_STYLES = ['default', 'crystal'];
 
@@ -39,6 +51,8 @@ const stats = [
 ];
 
 export const Landing = () => {
+  const theme = useTheme();
+  const isLight = theme === 'light';
   const [currentEmotion, setCurrentEmotion] = useState('happiness');
   const [emotionIndex, setEmotionIndex] = useState(0);
   const [styleIndex, setStyleIndex] = useState(0);
@@ -67,12 +81,12 @@ export const Landing = () => {
     <div className="min-h-screen bg-gray-950">
       {/* Animated background gradient */}
       <div className="pointer-events-none fixed inset-0">
-        <div className="absolute inset-0 bg-gradient-to-b from-purple-950/30 via-gray-950 to-gray-950" />
+        <div className={`absolute inset-0 ${isLight ? 'bg-gradient-to-b from-purple-100/40 via-white to-white' : 'bg-gradient-to-b from-purple-950/30 via-gray-950 to-gray-950'}`} />
         <motion.div
           animate={{
             background: [
-              `radial-gradient(600px circle at 50% 30%, ${config.color}15, transparent 70%)`,
-              `radial-gradient(800px circle at 50% 30%, ${config.color}10, transparent 70%)`,
+              `radial-gradient(600px circle at 50% 30%, ${config.color}${isLight ? '12' : '15'}, transparent 70%)`,
+              `radial-gradient(800px circle at 50% 30%, ${config.color}${isLight ? '08' : '10'}, transparent 70%)`,
             ],
           }}
           transition={{ duration: 3, repeat: Infinity, repeatType: 'reverse' }}

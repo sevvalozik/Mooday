@@ -103,7 +103,9 @@ export const ThemeCelestial = () => {
 };
 
 export const MoodBackground = ({ emotion }) => {
-  const EffectComponent = emotion ? BACKGROUND_MAP[emotion] : null;
+  const theme = useTheme();
+  const showEffects = theme !== 'light';
+  const EffectComponent = emotion && showEffects ? BACKGROUND_MAP[emotion] : null;
 
   return (
     <div className="fixed inset-0 overflow-hidden pointer-events-none" style={{ zIndex: 0 }}>

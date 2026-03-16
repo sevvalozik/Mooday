@@ -37,7 +37,7 @@ export const MoodSphere = ({ emotion = 'calm', intensity = 5, size = 'large', in
       className={`${size === 'large' ? 'h-80 w-80' : size === 'medium' ? 'h-48 w-48' : 'h-24 w-24'}`}
       style={{ opacity, transition: 'opacity 0.3s ease-in-out' }}
     >
-      <Canvas camera={{ position: [0, 0, size === 'large' ? 4 : 3], fov: 45 }}>
+      <Canvas camera={{ position: [0, 0, size === 'large' ? 4 : 3], fov: 45 }} gl={{ alpha: true }}>
         <Suspense fallback={null}>
           <ambientLight intensity={isCrystal ? 0.4 : 0.2} />
           <pointLight position={[10, 10, 10]} intensity={isCrystal ? 0.8 : 0.6} color="#ffffff" />
