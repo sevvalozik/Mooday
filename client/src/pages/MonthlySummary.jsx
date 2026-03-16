@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { PieChart, Pie, Cell, LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 import { PageWrapper } from '../components/layout/PageWrapper.jsx';
@@ -7,6 +7,266 @@ import { EMOTIONS } from '../utils/emotionConfig.js';
 import * as insightService from '../services/insightService.js';
 
 const SLIDES = ['overview', 'galaxy', 'distribution', 'timeline', 'highlights', 'streak'];
+
+const useTheme = () => {
+  const [theme, setTheme] = useState(document.documentElement.getAttribute('data-theme') || 'dark');
+  useEffect(() => {
+    const observer = new MutationObserver(() => {
+      setTheme(document.documentElement.getAttribute('data-theme') || 'dark');
+    });
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+    return () => observer.disconnect();
+  }, []);
+  return theme;
+};
+
+/* ─── Enhanced Galaxy Component ─── */
+const MoodGalaxy = ({ dailyMoods = [], daysInMonth = 30 }) => {
+  const theme = useTheme();
+  const isLight = theme === 'light';
+  const [hoveredDay, setHoveredDay] = useState(null);
+
+  // Generate star positions once
+  const stars = useMemo(() =>
+    Array.from({ length: 60 }, (_, i) => ({
+      id: i,
+      left: Math.random() * 100,
+      top: Math.random() * 100,
+      size: 0.5 + Math.random() * 2,
+      delay: Math.random() * 4,
+      duration: 2 + Math.random() * 3,
+    })), []);
+
+  // Build a map of day number → mood data
+  const dayMap = useMemo(() => {
+    const m = {};
+    dailyMoods.forEach((d) => { m[d.day] = d; });
+    return m;
+  }, [dailyMoods]);
+
+  // Calculate positions for ALL days (1 to daysInMonth)
+  const dayPositions = useMemo(() => {
+    const positions = [];
+    for (let i = 0; i < daysInMonth; i++) {
+      const goldenAngle = Math.PI * (3 - Math.sqrt(5));
+      const angle = i * goldenAngle;
+      const radius = 25 + Math.sqrt(i / daysInMonth) * 115;
+      const x = 160 + Math.cos(angle) * radius;
+      const y = 160 + Math.sin(angle) * radius;
+      positions.push({ day: i + 1, x, y });
+    }
+    return positions;
+  }, [daysInMonth]);
+
+  // Orbit rings for weeks (4 concentric circles)
+  const orbitRings = [55, 85, 110, 135];
+
+  return (
+    <div className="flex flex-col items-center gap-4">
+      <h2 className={`text-xl font-bold ${isLight ? 'text-gray-800' : 'text-white'}`}>Ayın Galaksisi</h2>
+      <p className={`text-sm ${isLight ? 'text-gray-500' : 'text-gray-400'}`}>Her küre bir günü temsil ediyor</p>
+
+      <div
+        className="relative mx-auto overflow-hidden rounded-2xl"
+        style={{
+          height: 360, width: 360,
+          background: isLight
+            ? 'radial-gradient(ellipse at 40% 30%, #e0e7ff 0%, #f0f4ff 40%, #f8fafc 100%)'
+            : 'radial-gradient(ellipse at 40% 30%, #1a103d 0%, #0d0a1a 50%, #050510 100%)',
+        }}
+      >
+        {/* Stars (dark mode) / Sparkles (light mode) */}
+        {stars.map((s) => (
+          <div
+            key={s.id}
+            className="absolute rounded-full"
+            style={{
+              left: `${s.left}%`,
+              top: `${s.top}%`,
+              width: s.size,
+              height: s.size,
+              backgroundColor: isLight ? 'rgba(139,92,246,0.25)' : 'rgba(255,255,255,0.7)',
+              animation: `starTwinkle ${s.duration}s ease-in-out ${s.delay}s infinite`,
+            }}
+          />
+        ))}
+
+        {/* Nebula glow */}
+        <div className="absolute inset-0" style={{
+          background: isLight
+            ? 'radial-gradient(circle at 65% 40%, rgba(139,92,246,0.08), transparent 50%), radial-gradient(circle at 30% 70%, rgba(236,72,153,0.06), transparent 45%)'
+            : 'radial-gradient(circle at 65% 40%, rgba(139,92,246,0.15), transparent 50%), radial-gradient(circle at 30% 70%, rgba(236,72,153,0.1), transparent 45%)',
+        }} />
+
+        {/* Orbit rings */}
+        {orbitRings.map((r, i) => (
+          <div
+            key={i}
+            className="absolute rounded-full"
+            style={{
+              left: 160 - r,
+              top: 160 - r,
+              width: r * 2,
+              height: r * 2,
+              border: `1px solid ${isLight ? 'rgba(139,92,246,0.1)' : 'rgba(255,255,255,0.06)'}`,
+            }}
+          />
+        ))}
+
+        {/* Connection lines (SVG) */}
+        <svg className="absolute inset-0" width="360" height="360" style={{ pointerEvents: 'none' }}>
+          <defs>
+            <linearGradient id="lineGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stopColor={isLight ? 'rgba(139,92,246,0.2)' : 'rgba(255,255,255,0.08)'} />
+              <stop offset="100%" stopColor={isLight ? 'rgba(236,72,153,0.2)' : 'rgba(139,92,246,0.15)'} />
+            </linearGradient>
+          </defs>
+          {dayPositions.map((pos, i) => {
+            if (i === 0) return null;
+            const prev = dayPositions[i - 1];
+            const hasCurrent = dayMap[pos.day];
+            const hasPrev = dayMap[prev.day];
+            if (!hasCurrent || !hasPrev) return null;
+            return (
+              <line
+                key={i}
+                x1={prev.x} y1={prev.y}
+                x2={pos.x} y2={pos.y}
+                stroke="url(#lineGrad)"
+                strokeWidth="1.5"
+                strokeDasharray="4 3"
+              />
+            );
+          })}
+        </svg>
+
+        {/* Day spheres + empty placeholders */}
+        {dayPositions.map((pos, i) => {
+          const mood = dayMap[pos.day];
+          if (!mood) {
+            // Empty day placeholder
+            return (
+              <motion.div
+                key={i}
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{ delay: i * 0.02, duration: 0.3 }}
+                className="absolute rounded-full"
+                style={{
+                  left: pos.x - 4,
+                  top: pos.y - 4,
+                  width: 8,
+                  height: 8,
+                  backgroundColor: isLight ? 'rgba(139,92,246,0.12)' : 'rgba(255,255,255,0.08)',
+                  border: `1px dashed ${isLight ? 'rgba(139,92,246,0.2)' : 'rgba(255,255,255,0.1)'}`,
+                }}
+                title={`Gün ${pos.day}: Veri yok`}
+              />
+            );
+          }
+
+          const emotion = mood.dominantEmotion || 'calm';
+          const cfg = EMOTIONS[emotion] || EMOTIONS.calm;
+          const size = 24 + (mood.intensity || 5) * 2;
+          const isHovered = hoveredDay === pos.day;
+
+          return (
+            <motion.div
+              key={i}
+              initial={{ scale: 0, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ delay: i * 0.04, type: 'spring', stiffness: 200 }}
+              className="absolute flex items-center justify-center rounded-full cursor-pointer"
+              style={{
+                left: pos.x - size / 2,
+                top: pos.y - size / 2,
+                width: size,
+                height: size,
+                background: `radial-gradient(circle at 30% 30%, ${cfg.color}ff, ${cfg.color}bb 60%, ${cfg.color}66)`,
+                boxShadow: isHovered
+                  ? `0 0 ${size}px ${cfg.color}aa, 0 0 ${size * 2}px ${cfg.color}44, inset 0 -2px 6px ${cfg.color}60`
+                  : `0 0 ${size * 0.6}px ${cfg.color}55, inset 0 -2px 4px ${cfg.color}40`,
+                animation: `spherePulse ${3 + (i % 3)}s ease-in-out ${(i * 0.3) % 3}s infinite`,
+                transform: isHovered ? 'scale(1.3)' : 'scale(1)',
+                transition: 'transform 0.2s ease, box-shadow 0.2s ease',
+                zIndex: isHovered ? 20 : 1,
+              }}
+              onMouseEnter={() => setHoveredDay(pos.day)}
+              onMouseLeave={() => setHoveredDay(null)}
+            >
+              <span style={{ fontSize: Math.max(10, size * 0.35), filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.3))' }}>
+                {cfg.icon}
+              </span>
+
+              {/* Hover tooltip */}
+              {isHovered && (
+                <motion.div
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="absolute rounded-xl px-3 py-2 text-center whitespace-nowrap pointer-events-none"
+                  style={{
+                    bottom: size + 8,
+                    left: '50%',
+                    transform: 'translateX(-50%)',
+                    backgroundColor: isLight ? 'rgba(255,255,255,0.95)' : 'rgba(15,10,30,0.95)',
+                    border: `1px solid ${cfg.color}44`,
+                    boxShadow: `0 4px 20px ${cfg.color}30`,
+                    zIndex: 30,
+                  }}
+                >
+                  <p className={`text-xs font-bold ${isLight ? 'text-gray-800' : 'text-white'}`}>
+                    Gün {pos.day}
+                  </p>
+                  <p style={{ color: cfg.color }} className="text-xs font-medium">
+                    {cfg.icon} {cfg.label}
+                  </p>
+                  <p className={`text-xs ${isLight ? 'text-gray-500' : 'text-gray-400'}`}>
+                    Yoğunluk: {mood.intensity || '?'}/10
+                  </p>
+                  {/* Tooltip arrow */}
+                  <div
+                    className="absolute left-1/2 -bottom-1.5"
+                    style={{
+                      width: 8, height: 8,
+                      transform: 'translateX(-50%) rotate(45deg)',
+                      backgroundColor: isLight ? 'rgba(255,255,255,0.95)' : 'rgba(15,10,30,0.95)',
+                      borderRight: `1px solid ${cfg.color}44`,
+                      borderBottom: `1px solid ${cfg.color}44`,
+                    }}
+                  />
+                </motion.div>
+              )}
+            </motion.div>
+          );
+        })}
+      </div>
+
+      {/* Legend */}
+      <div className="flex flex-wrap justify-center gap-2 mt-1">
+        {Object.entries(EMOTIONS).map(([key, cfg]) => (
+          <span key={key} className={`flex items-center gap-1 text-xs ${isLight ? 'text-gray-500' : 'text-gray-400'}`}>
+            <span className="inline-block h-2.5 w-2.5 rounded-full" style={{
+              backgroundColor: cfg.color,
+              boxShadow: `0 0 4px ${cfg.color}66`,
+            }} />
+            {cfg.label}
+          </span>
+        ))}
+      </div>
+
+      <style>{`
+        @keyframes starTwinkle {
+          0%, 100% { opacity: 0.3; }
+          50% { opacity: 1; }
+        }
+        @keyframes spherePulse {
+          0%, 100% { filter: brightness(1); }
+          50% { filter: brightness(1.15); }
+        }
+      `}</style>
+    </div>
+  );
+};
 
 export const MonthlySummary = () => {
   const [data, setData] = useState(null);
@@ -71,53 +331,10 @@ export const MonthlySummary = () => {
 
               {/* Slide 1: 30-Day Galaxy */}
               {slide === 1 && (
-                <div className="flex flex-col items-center gap-4">
-                  <h2 className="text-xl font-bold text-white">Ayın Galaksisi</h2>
-                  <p className="text-sm text-gray-400">Her küre bir günü temsil ediyor</p>
-                  <div className="relative mx-auto" style={{ height: 320, width: 320 }}>
-                    {(data.dailyMoods || []).map((day, i) => {
-                      const total = data.dailyMoods.length || 1;
-                      // Spiral layout — golden angle for even distribution
-                      const goldenAngle = Math.PI * (3 - Math.sqrt(5));
-                      const angle = i * goldenAngle;
-                      const radius = 20 + Math.sqrt(i / total) * 120;
-                      const x = 160 + Math.cos(angle) * radius;
-                      const y = 160 + Math.sin(angle) * radius;
-                      const emotion = day.dominantEmotion || 'calm';
-                      const cfg = EMOTIONS[emotion] || EMOTIONS.calm;
-                      const size = 22 + (day.intensity || 5) * 2;
-                      return (
-                        <motion.div
-                          key={i}
-                          initial={{ scale: 0, opacity: 0 }}
-                          animate={{ scale: 1, opacity: 0.9 }}
-                          transition={{ delay: i * 0.05, type: 'spring', stiffness: 200 }}
-                          className="absolute flex items-center justify-center rounded-full"
-                          style={{
-                            left: x - size / 2,
-                            top: y - size / 2,
-                            width: size,
-                            height: size,
-                            background: `radial-gradient(circle at 35% 35%, ${cfg.color}ee, ${cfg.color}88)`,
-                            boxShadow: `0 0 ${size * 0.8}px ${cfg.color}50, inset 0 -2px 4px ${cfg.color}40`,
-                          }}
-                          title={`Gün ${day.day}: ${cfg.label}`}
-                        >
-                          <span style={{ fontSize: Math.max(10, size * 0.4) }}>{cfg.icon}</span>
-                        </motion.div>
-                      );
-                    })}
-                  </div>
-                  {/* Legend */}
-                  <div className="flex flex-wrap justify-center gap-2 mt-2">
-                    {Object.entries(EMOTIONS).map(([key, cfg]) => (
-                      <span key={key} className="flex items-center gap-1 text-xs text-gray-400">
-                        <span className="inline-block h-2.5 w-2.5 rounded-full" style={{ backgroundColor: cfg.color }} />
-                        {cfg.label}
-                      </span>
-                    ))}
-                  </div>
-                </div>
+                <MoodGalaxy
+                  dailyMoods={data.dailyMoods}
+                  daysInMonth={new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0).getDate()}
+                />
               )}
 
               {/* Slide 2: Emotion Distribution */}
