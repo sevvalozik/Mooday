@@ -6,6 +6,7 @@ import { ParticleEffect } from './ParticleEffect.jsx';
 import { CalmEffect } from './CalmEffect.jsx';
 import { NightEffect } from './NightEffect.jsx';
 import { VortexEffect } from './VortexEffect.jsx';
+import { LightSkyEffect } from './LightSkyEffect.jsx';
 
 const BACKGROUND_MAP = {
   happiness: SunEffect,
@@ -104,13 +105,14 @@ export const ThemeCelestial = () => {
 
 export const MoodBackground = ({ emotion }) => {
   const theme = useTheme();
-  const showEffects = theme !== 'light';
-  const EffectComponent = emotion && showEffects ? BACKGROUND_MAP[emotion] : null;
+  const isLight = theme === 'light';
+  const DarkEffect = emotion && !isLight ? BACKGROUND_MAP[emotion] : null;
 
   return (
     <div className="fixed inset-0 overflow-hidden pointer-events-none" style={{ zIndex: 0 }}>
       <div className="absolute inset-0 bg-gray-950" />
-      {EffectComponent && <EffectComponent />}
+      {DarkEffect && <DarkEffect />}
+      {isLight && emotion && <LightSkyEffect emotion={emotion} />}
     </div>
   );
 };
