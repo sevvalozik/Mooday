@@ -60,57 +60,73 @@ nav, aside, main, section, .theme-t {
 /* ---- Light: Backgrounds ---- */
 
 [data-theme="light"] .bg-gray-950 {
-  background-color: #f8fafc;
+  background-color: transparent;
 }
 
 [data-theme="light"] .bg-gray-900 {
-  background-color: #ffffff;
+  background-color: rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
 }
 
 [data-theme="light"] .bg-gray-950\/80 {
-  background-color: rgba(255, 255, 255, 0.92);
+  background-color: rgba(255, 255, 255, 0.80);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
 }
 
 [data-theme="light"] .bg-gray-950\/50 {
-  background-color: rgba(255, 255, 255, 0.8);
+  background-color: rgba(255, 255, 255, 0.60);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
 }
 
 [data-theme="light"] .bg-gray-950\/90 {
-  background-color: rgba(255, 255, 255, 0.96);
+  background-color: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
 }
 
 /* Glass surfaces */
 [data-theme="light"] .bg-white\/5 {
-  background-color: #ffffff;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 0 0 1px rgba(0, 0, 0, 0.03);
+  background-color: rgba(255, 255, 255, 0.65);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 0 0 1px rgba(0, 0, 0, 0.04);
 }
 
 [data-theme="light"] .bg-white\/10 {
-  background-color: #f1f5f9;
+  background-color: rgba(255, 255, 255, 0.70);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
 }
 
 [data-theme="light"] .bg-white\/15 {
-  background-color: #e2e8f0;
+  background-color: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
 }
 
 [data-theme="light"] .bg-white\/20 {
-  background-color: #e2e8f0;
+  background-color: rgba(255, 255, 255, 0.80);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
 }
 
 [data-theme="light"] .bg-white\/\[0\.02\] {
-  background-color: #fafbfc;
+  background-color: rgba(255, 255, 255, 0.55);
 }
 
 [data-theme="light"] .bg-white\/\[0\.03\] {
-  background-color: #f8f9fa;
+  background-color: rgba(255, 255, 255, 0.60);
 }
 
 [data-theme="light"] .bg-white\/\[0\.06\] {
-  background-color: #f1f5f9;
+  background-color: rgba(255, 255, 255, 0.65);
 }
 
 [data-theme="light"] .bg-white\/\[0\.07\] {
-  background-color: #f1f5f9;
+  background-color: rgba(255, 255, 255, 0.65);
 }
 
 /* Primary surfaces */
