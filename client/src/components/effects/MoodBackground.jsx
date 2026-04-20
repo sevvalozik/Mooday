@@ -38,7 +38,7 @@ export const ThemeCelestial = () => {
 
   if (theme === 'light') {
     return (
-      <div className="fixed inset-0 pointer-events-none" style={{ zIndex: -1 }}>
+      <div className="fixed inset-0 pointer-events-none" style={{ zIndex: 1 }}>
         {/* Sun glow outer */}
         <div className="absolute -top-16 right-[8%] h-48 w-48 rounded-full"
           style={{
@@ -69,7 +69,7 @@ export const ThemeCelestial = () => {
 
   if (theme === 'dark') {
     return (
-      <div className="fixed inset-0 pointer-events-none" style={{ zIndex: -1 }}>
+      <div className="fixed inset-0 pointer-events-none" style={{ zIndex: 1 }}>
         {/* Moon */}
         <div className="absolute top-10 right-[10%] h-24 w-24 rounded-full"
           style={{
@@ -110,7 +110,7 @@ export const MoodBackground = ({ emotion }) => {
   const DarkEffect = !isLight ? (BACKGROUND_MAP[activeEmotion] || null) : null;
 
   return (
-    <div className="fixed inset-0 overflow-hidden pointer-events-none" style={{ zIndex: -1 }}>
+    <div className="fixed inset-0 overflow-hidden pointer-events-none" style={{ zIndex: 0 }}>
       <div className="absolute inset-0 bg-gray-950" />
       {DarkEffect && <DarkEffect />}
       {isLight && <LightSkyEffect emotion={activeEmotion} />}
