@@ -147,7 +147,7 @@ const GalaxyScene = ({ friends, onFriendClick, userMood, sphereStyle, isLight })
 
       {/* Orbit rings */}
       {friends.map((_, i) => (
-        <OrbitRing key={`ring-${i}`} radius={2.5 + i * 1.2} opacity={isLight ? 0.15 + i * 0.02 : 0.18 + i * 0.02} color={isLight ? '#3b82f6' : '#ffffff'} />
+        <OrbitRing key={`ring-${i}`} radius={2.5 + i * 1.2} opacity={isLight ? 0.55 : 0.45} color={isLight ? '#1d4ed8' : '#a5b4fc'} />
       ))}
 
       {/* Friend planets */}
