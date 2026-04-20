@@ -95,23 +95,25 @@ const Clouds = ({ color = 'rgba(255,255,255,0.9)', count = 6 }) => {
 
 const LightRain = () => {
   const drops = useMemo(() =>
-    Array.from({ length: 60 }, (_, i) => ({
+    Array.from({ length: 180 }, (_, i) => ({
       id: i,
       left: `${Math.random() * 100}%`,
-      delay: `${Math.random() * 2}s`,
-      duration: `${0.8 + Math.random() * 0.5}s`,
-      opacity: 0.15 + Math.random() * 0.2,
+      delay: `${Math.random() * 1.5}s`,
+      duration: `${0.5 + Math.random() * 0.4}s`,
+      opacity: 0.45 + Math.random() * 0.4,
+      width: Math.random() > 0.5 ? 2 : 1,
     })), []);
 
   return drops.map((d) => (
     <div
       key={d.id}
-      className="absolute top-0 w-px"
+      className="absolute top-0"
       style={{
         left: d.left,
-        height: '8%',
+        width: d.width,
+        height: '10%',
         opacity: d.opacity,
-        background: 'linear-gradient(to bottom, transparent, rgba(100,130,180,0.5), transparent)',
+        background: 'linear-gradient(to bottom, transparent, rgba(80,110,180,0.8), rgba(60,90,160,0.6), transparent)',
         animation: `lightRain ${d.duration} linear ${d.delay} infinite`,
       }}
     />

@@ -184,18 +184,113 @@ export const FriendGalaxy = ({ friends = [], userMood }) => {
   const isLight = theme === 'light';
 
   const wrapperBg = isLight
-    ? 'linear-gradient(to bottom, #87CEEB 0%, #B8D8F0 35%, #D8EAF8 65%, #EEF5FB 100%)'
+    ? 'linear-gradient(to bottom, #4A90D9 0%, #74B3E8 20%, #A8D0F0 45%, #C8E4F8 70%, #E0F0FC 100%)'
     : '#050810';
 
   return (
     <div
-      className="h-[320px] sm:h-[400px] md:h-[500px] w-full rounded-2xl overflow-hidden"
+      className="h-[320px] sm:h-[400px] md:h-[500px] w-full rounded-2xl overflow-hidden relative"
       style={{ background: wrapperBg }}
     >
+      {/* Gündüz gökyüzü elementleri */}
+      {isLight && (
+        <div className="absolute inset-0 pointer-events-none overflow-hidden" style={{ zIndex: 1 }}>
+          {/* Güneş */}
+          <div className="absolute" style={{
+            top: '-20px', right: '10%',
+            width: '90px', height: '90px',
+            borderRadius: '50%',
+            background: 'radial-gradient(circle, rgba(255,240,100,1) 0%, rgba(255,210,50,0.8) 40%, rgba(255,180,0,0.2) 70%, transparent 85%)',
+            boxShadow: '0 0 40px rgba(255,220,50,0.5)',
+            animation: 'sunPulse 4s ease-in-out infinite',
+          }} />
+          {/* Güneş ışınları */}
+          <div className="absolute" style={{
+            top: '-40px', right: '6%',
+            width: '160px', height: '160px',
+            borderRadius: '50%',
+            background: 'radial-gradient(circle, rgba(255,220,80,0.15) 0%, transparent 70%)',
+          }} />
+          {/* Büyük bulut 1 */}
+          <div className="absolute" style={{
+            top: '12%', left: '-5%',
+            width: '200px', height: '60px',
+            borderRadius: '50px',
+            background: 'rgba(255,255,255,0.85)',
+            boxShadow: '0 4px 20px rgba(255,255,255,0.4)',
+            animation: 'cloudMove1 35s linear infinite',
+          }} />
+          <div className="absolute" style={{
+            top: '6%', left: '2%',
+            width: '120px', height: '50px',
+            borderRadius: '50px',
+            background: 'rgba(255,255,255,0.75)',
+            animation: 'cloudMove1 35s linear infinite',
+          }} />
+          {/* Büyük bulut 2 */}
+          <div className="absolute" style={{
+            top: '8%', left: '30%',
+            width: '160px', height: '50px',
+            borderRadius: '50px',
+            background: 'rgba(255,255,255,0.80)',
+            animation: 'cloudMove2 45s linear infinite',
+          }} />
+          <div className="absolute" style={{
+            top: '3%', left: '36%',
+            width: '100px', height: '45px',
+            borderRadius: '50px',
+            background: 'rgba(255,255,255,0.70)',
+            animation: 'cloudMove2 45s linear infinite',
+          }} />
+          {/* Küçük bulut */}
+          <div className="absolute" style={{
+            top: '5%', right: '30%',
+            width: '100px', height: '35px',
+            borderRadius: '50px',
+            background: 'rgba(255,255,255,0.65)',
+            animation: 'cloudMove3 28s linear infinite',
+          }} />
+          {/* Kuşlar */}
+          <div className="absolute" style={{
+            top: '18%', left: '20%',
+            fontSize: '12px', opacity: 0.5,
+            animation: 'birdFly 20s linear infinite',
+          }}>〜〜〜</div>
+          <div className="absolute" style={{
+            top: '25%', left: '60%',
+            fontSize: '10px', opacity: 0.35,
+            animation: 'birdFly 28s linear 5s infinite',
+          }}>〜〜</div>
+          <style>{`
+            @keyframes sunPulse {
+              0%,100% { transform: scale(1); opacity:1; }
+              50% { transform: scale(1.06); opacity:0.9; }
+            }
+            @keyframes cloudMove1 {
+              0% { transform: translateX(-120%); }
+              100% { transform: translateX(120vw); }
+            }
+            @keyframes cloudMove2 {
+              0% { transform: translateX(-80%); }
+              100% { transform: translateX(120vw); }
+            }
+            @keyframes cloudMove3 {
+              0% { transform: translateX(120vw); }
+              100% { transform: translateX(-200px); }
+            }
+            @keyframes birdFly {
+              0% { transform: translateX(-60px); opacity:0; }
+              10% { opacity:0.5; }
+              90% { opacity:0.4; }
+              100% { transform: translateX(120vw); opacity:0; }
+            }
+          `}</style>
+        </div>
+      )}
       <Canvas
         camera={{ position: [0, 4, 8], fov: 50 }}
         gl={{ alpha: true }}
-        style={{ background: 'transparent' }}
+        style={{ background: 'transparent', position: 'relative', zIndex: 2 }}
       >
         <Suspense fallback={null}>
           <GalaxyScene

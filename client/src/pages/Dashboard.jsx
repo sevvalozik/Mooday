@@ -205,38 +205,6 @@ export const Dashboard = () => {
           </motion.div>
         )}
 
-        {/* Weekly Insights Card */}
-        {insights && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4 }}
-            className="rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur-sm"
-          >
-            <h2 className="mb-3 text-lg font-semibold text-white">Haftalık Analiz</h2>
-            <div className="grid gap-4 md:grid-cols-3">
-              <div className="rounded-lg bg-white/5 p-4">
-                <p className="text-sm text-gray-400">Trend</p>
-                <p className="text-lg font-bold text-white">
-                  {insights.trend?.direction === 'up' ? '📈 Yükseliş' :
-                   insights.trend?.direction === 'down' ? '📉 Düşüş' : '➡️ Stabil'}
-                </p>
-                <p className="text-xs text-gray-500">{insights.trend?.percentage}% değişim</p>
-              </div>
-              <div className="rounded-lg bg-white/5 p-4">
-                <p className="text-sm text-gray-400">Bu Hafta</p>
-                <p className="text-lg font-bold text-white">{insights.totalLogs}</p>
-              </div>
-              <div className="rounded-lg bg-white/5 p-4">
-                <p className="text-sm text-gray-400">En İyi Gün</p>
-                <p className="text-lg font-bold text-white">
-                  {insights.dayPatterns?.filter((d) => d.avgValence !== null)
-                    .sort((a, b) => b.avgValence - a.avgValence)[0]?.day || '—'}
-                </p>
-              </div>
-            </div>
-          </motion.div>
-        )}
       </div>
     </PageWrapper>
   );
