@@ -86,9 +86,6 @@ export const Dashboard = () => {
                 return 'İyi akşamlar';
               })()}, <span className="text-purple-400">{user?.displayName || ''}</span> ✨
             </h1>
-            <p className="text-sm text-gray-400 mt-1">
-              {insights?.weatherReport || 'Bugün nasıl hissediyorsun? 💜'}
-            </p>
           </div>
           <Link
             to="/mood/new"

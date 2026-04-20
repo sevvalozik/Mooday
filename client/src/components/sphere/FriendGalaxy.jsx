@@ -3,7 +3,9 @@ import { Canvas, useFrame } from '@react-three/fiber';
 import { Text, OrbitControls, Stars } from '@react-three/drei';
 import * as THREE from 'three';
 import { PlanetSphere } from './PlanetSphere.jsx';
+import { MoodSphereCore } from './MoodSphereCore.jsx';
 import { useNavigate } from 'react-router-dom';
+import { useAuthStore } from '../../stores/authStore.js';
 import { EMOTIONS } from '../../utils/emotionConfig.js';
 
 const OrbitRing = ({ radius, opacity = 0.08 }) => {
@@ -114,17 +116,22 @@ const FriendOrb = ({ friend, planetIndex, orbitRadius, onClick }) => {
   );
 };
 
-const GalaxyScene = ({ friends, onFriendClick, userMood }) => {
+const GalaxyScene = ({ friends, onFriendClick, userMood, sphereStyle }) => {
   return (
     <>
-      <ambientLight intensity={0.2} />
+      <ambientLight intensity={0.4} />
       <pointLight position={[0, 0, 0]} intensity={1.5} color="#FFD700" distance={25} decay={2} />
       <pointLight position={[10, 5, 10]} intensity={0.3} />
 
       <Stars radius={50} depth={50} count={3000} factor={3} saturation={0.5} fade speed={0.3} />
 
-      {/* User sphere as "sun" — simple glowing sphere, no shader jitter */}
-      <SunSphere emotion={userMood?.emotion || 'calm'} />
+      {/* User sphere as "sun" — uses selected sphere style */}
+      <MoodSphereCore
+        emotion={userMood?.emotion || 'calm'}
+        intensity={userMood?.intensity || 5}
+        size={0.85}
+        style={sphereStyle || 'default'}
+      />
 
       {/* Orbit rings */}
       {friends.map((_, i) => (
@@ -160,15 +167,17 @@ const GalaxyScene = ({ friends, onFriendClick, userMood }) => {
 
 export const FriendGalaxy = ({ friends = [], userMood }) => {
   const navigate = useNavigate();
+  const sphereStyle = useAuthStore((s) => s.sphereStyle);
 
   return (
-    <div className="h-[320px] sm:h-[400px] md:h-[500px] w-full rounded-2xl overflow-hidden">
+    <div className="h-[320px] sm:h-[400px] md:h-[500px] w-full rounded-2xl overflow-hidden" style={{ background: '#050810' }}>
       <Canvas camera={{ position: [0, 4, 8], fov: 50 }}>
         <Suspense fallback={null}>
           <GalaxyScene
             friends={friends}
             onFriendClick={(id) => navigate(`/friends/${id}`)}
             userMood={userMood}
+            sphereStyle={sphereStyle}
           />
         </Suspense>
       </Canvas>

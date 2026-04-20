@@ -86,8 +86,7 @@ export const WeeklyInsights = () => {
   return (
     <PageWrapper>
       <div className="mx-auto max-w-2xl">
-        <h1 className="mb-2 text-2xl font-bold text-white">Haftalık Analiz</h1>
-        <p className="mb-6 text-sm text-gray-400">{data.weatherReport}</p>
+        <h1 className="mb-6 text-2xl font-bold text-white">Haftalık Analiz</h1>
 
         {/* Trend & Stats */}
         <div className="mb-6 grid gap-4 sm:grid-cols-3">
