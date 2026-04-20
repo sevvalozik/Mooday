@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useEffect, useState } from 'react';
 
 const SKY_CONFIGS = {
   happiness: {
@@ -181,6 +181,45 @@ const HazeOverlay = () => (
   }} />
 );
 
+const LightningBolts = () => {
+  const [flashes, setFlashes] = useState([]);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (Math.random() > 0.3) {
+        const id = Date.now();
+        const left = 10 + Math.random() * 80;
+        setFlashes((prev) => [...prev, { id, left }]);
+        setTimeout(() => {
+          setFlashes((prev) => [...prev, { id: id + 1, left: left + (Math.random() - 0.5) * 10 }]);
+        }, 80 + Math.random() * 80);
+        setTimeout(() => {
+          setFlashes((prev) => prev.filter((f) => f.id !== id && f.id !== id + 1));
+        }, 350);
+      }
+    }, 1400);
+    return () => clearInterval(interval);
+  }, []);
+
+  return flashes.map((flash) => (
+    <div key={flash.id} className="absolute top-0" style={{ left: `${flash.left}%` }}>
+      <div className="absolute -left-[30vw] -top-10 h-[60vh] w-[60vw]"
+        style={{ background: 'radial-gradient(ellipse, rgba(180,100,120,0.25), transparent 70%)', opacity: 0.5 }}
+      />
+      <svg className="absolute -left-3 top-0 h-[45vh] w-8" viewBox="0 0 24 200" fill="none" style={{ opacity: 0.85 }}>
+        <path
+          d={`M12,0 L${8 + Math.random() * 8},40 L${14 + Math.random() * 4},38 L${6 + Math.random() * 6},90 L${15 + Math.random() * 4},85 L${4 + Math.random() * 8},150 L${10 + Math.random() * 4},145 L${6 + Math.random() * 6},200`}
+          stroke="rgba(140,60,80,0.9)" strokeWidth="2" opacity="0.9"
+        />
+        <path
+          d={`M12,0 L${8 + Math.random() * 8},40 L${14 + Math.random() * 4},38 L${6 + Math.random() * 6},90`}
+          stroke="rgba(200,100,120,0.4)" strokeWidth="5" opacity="0.35"
+        />
+      </svg>
+    </div>
+  ));
+};
+
 export const LightSkyEffect = ({ emotion }) => {
   const config = SKY_CONFIGS[emotion] || SKY_CONFIGS.calm;
 
@@ -214,6 +253,9 @@ export const LightSkyEffect = ({ emotion }) => {
 
       {/* Haze for anxiety */}
       {config.haze && <HazeOverlay />}
+
+      {/* Lightning for anger */}
+      {emotion === 'anger' && <LightningBolts />}
 
       <style>{`
         @keyframes cloudDrift {
