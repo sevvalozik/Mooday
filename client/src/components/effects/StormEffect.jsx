@@ -5,7 +5,7 @@ export const StormEffect = () => {
 
   useEffect(() => {
     const interval = setInterval(() => {
-      if (Math.random() > 0.3) {
+      if (Math.random() > 0.2) {
         const id = Date.now();
         const left = 10 + Math.random() * 80;
         setFlashes((prev) => [...prev, { id, left }]);
@@ -14,9 +14,9 @@ export const StormEffect = () => {
         }, 80 + Math.random() * 80);
         setTimeout(() => {
           setFlashes((prev) => prev.filter((f) => f.id !== id && f.id !== id + 1));
-        }, 400);
+        }, 600);
       }
-    }, 1200);
+    }, 900);
     return () => clearInterval(interval);
   }, []);
 
@@ -45,17 +45,17 @@ export const StormEffect = () => {
       {/* Lightning flashes */}
       {flashes.map((flash) => (
         <div key={flash.id} className="absolute top-0" style={{ left: `${flash.left}%` }}>
-          <div className="absolute -left-[30vw] -top-10 h-[60vh] w-[60vw] opacity-30"
-            style={{ background: 'radial-gradient(ellipse, rgba(255,255,255,0.9), transparent 70%)' }}
+          <div className="absolute -left-[30vw] -top-10 h-[60vh] w-[60vw] opacity-50"
+            style={{ background: 'radial-gradient(ellipse, rgba(255,255,255,0.95), transparent 70%)' }}
           />
-          <svg className="absolute -left-3 top-0 h-[45vh] w-8 opacity-95" viewBox="0 0 24 200" fill="none">
+          <svg className="absolute -left-3 top-0 h-[55vh] w-10" viewBox="0 0 24 200" fill="none" style={{ opacity: 1 }}>
             <path
               d={`M12,0 L${8 + Math.random() * 8},40 L${14 + Math.random() * 4},38 L${6 + Math.random() * 6},90 L${15 + Math.random() * 4},85 L${4 + Math.random() * 8},150 L${10 + Math.random() * 4},145 L${6 + Math.random() * 6},200`}
-              stroke="white" strokeWidth="2.5" opacity="0.95"
+              stroke="white" strokeWidth="3" opacity="1"
             />
             <path
               d={`M12,0 L${8 + Math.random() * 8},40 L${14 + Math.random() * 4},38 L${6 + Math.random() * 6},90 L${15 + Math.random() * 4},85 L${4 + Math.random() * 8},150`}
-              stroke="rgba(255,200,200,0.5)" strokeWidth="6" opacity="0.4"
+              stroke="rgba(255,220,220,0.7)" strokeWidth="8" opacity="0.6"
             />
           </svg>
         </div>

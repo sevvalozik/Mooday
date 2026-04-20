@@ -57,6 +57,30 @@ nav, aside, main, section, .theme-t {
   color: #0f172a;
 }
 
+/* ---- Light: Sidebar & Navbar ---- */
+
+[data-theme="light"] aside {
+  background-color: rgba(255, 255, 255, 0.35) !important;
+  backdrop-filter: blur(20px) !important;
+  -webkit-backdrop-filter: blur(20px) !important;
+  border-right: 1px solid rgba(0, 0, 0, 0.06) !important;
+}
+
+[data-theme="light"] aside a {
+  color: #374151;
+}
+
+[data-theme="light"] aside a:hover {
+  background-color: rgba(255, 255, 255, 0.45);
+  color: #111827;
+}
+
+[data-theme="light"] aside a.active,
+[data-theme="light"] aside a[aria-current="page"] {
+  background-color: rgba(124, 58, 237, 0.10);
+  color: #7c3aed;
+}
+
 /* ---- Light: Backgrounds ---- */
 
 [data-theme="light"] .bg-gray-950 {
