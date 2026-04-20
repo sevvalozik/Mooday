@@ -12,6 +12,7 @@ import { FriendProfile } from './pages/FriendProfile.jsx';
 import { Messages } from './pages/Messages.jsx';
 import { Groups } from './pages/Groups.jsx';
 import { MonthlySummary } from './pages/MonthlySummary.jsx';
+import { WeeklyInsights } from './pages/WeeklyInsights.jsx';
 import { Settings } from './pages/Settings.jsx';
 import { Notifications } from './pages/Notifications.jsx';
 import { Friends } from './pages/Friends.jsx';
@@ -61,6 +62,7 @@ export default function App() {
         <Route path="/messages" element={<ProtectedRoute><Messages /></ProtectedRoute>} />
         <Route path="/messages/:friendId" element={<ProtectedRoute><Messages /></ProtectedRoute>} />
         <Route path="/groups" element={<ProtectedRoute><Groups /></ProtectedRoute>} />
+        <Route path="/weekly" element={<ProtectedRoute><WeeklyInsights /></ProtectedRoute>} />
         <Route path="/summary" element={<ProtectedRoute><MonthlySummary /></ProtectedRoute>} />
         <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
         <Route path="/history" element={<ProtectedRoute><MoodHistory /></ProtectedRoute>} />
