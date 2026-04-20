@@ -106,13 +106,14 @@ export const ThemeCelestial = () => {
 export const MoodBackground = ({ emotion }) => {
   const theme = useTheme();
   const isLight = theme === 'light';
-  const DarkEffect = emotion && !isLight ? BACKGROUND_MAP[emotion] : null;
+  const activeEmotion = emotion || 'calm';
+  const DarkEffect = !isLight ? (BACKGROUND_MAP[activeEmotion] || null) : null;
 
   return (
     <div className="fixed inset-0 overflow-hidden pointer-events-none" style={{ zIndex: 0 }}>
       <div className="absolute inset-0 bg-gray-950" />
       {DarkEffect && <DarkEffect />}
-      {isLight && emotion && <LightSkyEffect emotion={emotion} />}
+      {isLight && <LightSkyEffect emotion={activeEmotion} />}
     </div>
   );
 };
