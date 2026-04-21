@@ -7,6 +7,7 @@ import { CalmEffect } from './CalmEffect.jsx';
 import { NightEffect } from './NightEffect.jsx';
 import { VortexEffect } from './VortexEffect.jsx';
 import { LightSkyEffect } from './LightSkyEffect.jsx';
+import { HopefulEffect } from './HopefulEffect.jsx';
 
 const BACKGROUND_MAP = {
   happiness: SunEffect,
@@ -16,7 +17,7 @@ const BACKGROUND_MAP = {
   excitement: ParticleEffect,
   anxiety: VortexEffect,
   tired: NightEffect,
-  hopeful: SunEffect,
+  hopeful: HopefulEffect,
 };
 
 const useTheme = () => {
