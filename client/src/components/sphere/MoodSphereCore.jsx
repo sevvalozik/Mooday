@@ -25,7 +25,7 @@ const SphereInner = ({ emotion, intensity, size, style }) => {
 
   const uniforms = useMemo(
     () => ({
-      uTime: { value: 0 },
+      uTime: { value: performance.now() / 1000 },
       uColorA: { value: new THREE.Vector3(...colors.colorA) },
       uColorB: { value: new THREE.Vector3(...colors.colorB) },
       uArousal: { value: config.arousal },

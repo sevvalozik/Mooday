@@ -148,11 +148,11 @@ export const nebulaFragmentShader = /* glsl */ `
     vec3 color = mix(deepColor, midColor, nebula2);
     color = mix(color, brightColor, nebula3 * nebula1 * 0.6);
 
-    // Aurora bands — sinusoidal color streaks
+    // Aurora bands — sinusoidal color streaks, emotion renkleriyle sınırlı
     float aurora = sin(vPosition.y * 8.0 + uTime * 0.4 + snoise(vPosition * 3.0) * 2.0);
     aurora = smoothstep(0.3, 0.8, aurora);
-    vec3 auroraColor = mix(uColorA, vec3(0.3, 1.0, 0.7), 0.5);
-    color = mix(color, auroraColor, aurora * 0.25 * uIntensity);
+    vec3 auroraColor = mix(uColorA, uColorB, 0.65);
+    color = mix(color, auroraColor, aurora * 0.2 * uIntensity);
 
     // Star points — tiny bright spots
     float stars = snoise(vPosition * 40.0 + uTime * 0.5);
