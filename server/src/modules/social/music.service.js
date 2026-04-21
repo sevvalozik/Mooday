@@ -37,8 +37,8 @@ export const shareSong = async (senderId, { receiverId, songTitle, artistName, s
     data: {
       userId: receiverId,
       type: 'music_share',
-      title: 'New Song Shared',
-      body: `${sender.displayName} shared "${songTitle}" with you`,
+      title: 'Yeni Müzik Paylaşımı',
+      body: `${sender.displayName} sana "${songTitle}" şarkısını paylaştı`,
       data: { musicShareId: musicShare.id, senderId },
     },
   });

@@ -130,8 +130,8 @@ export const addMember = async (userId, groupId, targetUserId) => {
     data: {
       userId: targetUserId,
       type: 'group_invite',
-      title: 'Added to Group',
-      body: `You were added to "${group.name}"`,
+      title: 'Gruba Eklendi',
+      body: `"${group.name}" grubuna eklendin`,
       data: { groupId },
     },
   });

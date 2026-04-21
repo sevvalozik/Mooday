@@ -52,8 +52,8 @@ export const sendReaction = async (senderId, { receiverId, moodLogId, type, emoj
     data: {
       userId: receiverId,
       type: 'reaction',
-      title: 'New Reaction',
-      body: `${sender.displayName} sent you a ${type}`,
+      title: 'Yeni Tepki',
+      body: `${sender.displayName} sana ${({ hug: 'sarılma', cheer: 'tezahürat', 'high-five': 'beşlik', heart: 'kalp', laugh: 'gülme' })[type] || type} gönderdi`,
       data: { reactionId: reaction.id, senderId, type },
     },
   });

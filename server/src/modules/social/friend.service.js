@@ -85,8 +85,8 @@ export const sendRequest = async (userId, targetId) => {
     data: {
       userId: targetId,
       type: 'friend_request',
-      title: 'New Friend Request',
-      body: `${sendingUser.displayName} sent you a friend request`,
+      title: 'Yeni Arkadaşlık İsteği',
+      body: `${sendingUser.displayName} sana arkadaşlık isteği gönderdi`,
       data: { friendshipId: friendship.id, senderId: userId },
     },
   });
@@ -151,8 +151,8 @@ export const acceptRequest = async (userId, friendshipId) => {
     data: {
       userId: otherUserId,
       type: 'friend_accepted',
-      title: 'Friend Request Accepted',
-      body: `${acceptingUser.displayName} accepted your friend request`,
+      title: 'Arkadaşlık İsteği Kabul Edildi',
+      body: `${acceptingUser.displayName} arkadaşlık isteğini kabul etti`,
       data: { friendshipId },
     },
   });
