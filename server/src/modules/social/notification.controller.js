@@ -4,7 +4,7 @@ export const getNotifications = async (req, res, next) => {
   try {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 30;
-    const result = await notificationService.getNotifications(req.user.id, { page, limit });
+    const result = await notificationService.getNotifications(req.user.userId, { page, limit });
     res.json({ success: true, ...result });
   } catch (err) {
     next(err);
@@ -13,7 +13,7 @@ export const getNotifications = async (req, res, next) => {
 
 export const markAsRead = async (req, res, next) => {
   try {
-    const notification = await notificationService.markAsRead(req.user.id, req.params.id);
+    const notification = await notificationService.markAsRead(req.user.userId, req.params.id);
     if (!notification) {
       return res.status(404).json({ success: false, error: { message: 'Notification not found' } });
     }
@@ -25,7 +25,7 @@ export const markAsRead = async (req, res, next) => {
 
 export const markAllAsRead = async (req, res, next) => {
   try {
-    await notificationService.markAllAsRead(req.user.id);
+    await notificationService.markAllAsRead(req.user.userId);
     res.json({ success: true });
   } catch (err) {
     next(err);
