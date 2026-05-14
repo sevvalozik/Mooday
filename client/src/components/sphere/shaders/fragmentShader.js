@@ -105,10 +105,12 @@ export const fragmentShader = /* glsl */ `
     // Displacement shading — subtle
     color += vDisplacement * 0.15;
 
-    // Intensity-based saturation: muted at low, vivid at high
+    // Intensity-based saturation + brightness
     float gray = dot(color, vec3(0.299, 0.587, 0.114));
-    float saturation = 0.25 + uIntensity * 0.95;
+    float saturation = 0.15 + uIntensity * 1.25;
     color = mix(vec3(gray), color, saturation);
+    float intensityBrightness = 0.4 + uIntensity * 0.8;
+    color *= intensityBrightness;
 
     // Final brightness
     float brightness = 0.8 + uValence * 0.1;

@@ -177,10 +177,12 @@ export const nebulaFragmentShader = /* glsl */ `
     float pulse = sin(uTime * (0.5 + uArousal * 2.0)) * 0.5 + 0.5;
     color *= 0.9 + pulse * 0.15 * uIntensity;
 
-    // Intensity-based saturation: muted at low, vivid at high
+    // Intensity-based saturation + brightness
     float gray = dot(color, vec3(0.299, 0.587, 0.114));
-    float saturation = 0.25 + uIntensity * 0.95;
+    float saturation = 0.15 + uIntensity * 1.25;
     color = mix(vec3(gray), color, saturation);
+    float intensityBrightness = 0.4 + uIntensity * 0.8;
+    color *= intensityBrightness;
 
     float brightness = 0.85 + uValence * 0.15;
     color *= brightness;
