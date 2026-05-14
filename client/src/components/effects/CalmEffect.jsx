@@ -31,13 +31,17 @@ export const CalmEffect = () => {
 
   return (
     <>
-      <div className="absolute inset-0 bg-gradient-to-b from-emerald-950/25 via-teal-950/10 to-gray-950" />
+      <div className="absolute inset-0"
+        style={{
+          background: 'linear-gradient(to bottom, #0a2e1f 0%, #081f1a 40%, #061816 70%, #040e0d 100%)',
+        }}
+      />
 
       {/* Aurora-like gradient waves */}
       {waves.map((wave) => (
-        <div key={wave.id} className="absolute inset-x-0 top-0 h-96"
+        <div key={wave.id} className="absolute inset-x-0 top-0 h-full"
           style={{
-            background: 'linear-gradient(135deg, rgba(46, 139, 87, 0.4) 0%, rgba(0, 128, 128, 0.25) 50%, rgba(32, 178, 170, 0.15) 100%)',
+            background: 'linear-gradient(135deg, rgba(46, 139, 87, 0.25) 0%, rgba(0, 128, 128, 0.15) 40%, rgba(32, 178, 170, 0.05) 70%, transparent 100%)',
             opacity: wave.opacity,
             animation: `auroraCalm 8s ease-in-out ${wave.delay} infinite alternate`,
           }}
