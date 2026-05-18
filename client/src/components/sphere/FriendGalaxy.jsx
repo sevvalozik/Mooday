@@ -1,4 +1,4 @@
-import { Suspense, useRef, useMemo, useState, useEffect } from 'react';
+import { Suspense, useRef, useMemo, useState, useEffect, memo } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { Text, OrbitControls, Stars } from '@react-three/drei';
 import * as THREE from 'three';
@@ -177,7 +177,7 @@ const GalaxyScene = ({ friends, onFriendClick, userMood, sphereStyle, isLight })
   );
 };
 
-export const FriendGalaxy = ({ friends = [], userMood }) => {
+export const FriendGalaxy = memo(({ friends = [], userMood }) => {
   const navigate = useNavigate();
   const sphereStyle = useAuthStore((s) => s.sphereStyle);
   const theme = useTheme();
@@ -304,4 +304,4 @@ export const FriendGalaxy = ({ friends = [], userMood }) => {
       </Canvas>
     </div>
   );
-};
+});

@@ -11,10 +11,16 @@ export const useNotificationStore = create((set) => ({
     }),
 
   addNotification: (notification) =>
-    set((state) => ({
-      notifications: [notification, ...state.notifications],
-      unreadCount: state.unreadCount + 1,
-    })),
+    set((state) => {
+      // Prevent duplicates
+      if (state.notifications.some((n) => n.id === notification.id)) return state;
+      // Cap at 100 to prevent memory leak
+      const updated = [notification, ...state.notifications].slice(0, 100);
+      return {
+        notifications: updated,
+        unreadCount: Math.min(state.unreadCount + 1, 99),
+      };
+    }),
 
   markAsRead: (id) =>
     set((state) => ({

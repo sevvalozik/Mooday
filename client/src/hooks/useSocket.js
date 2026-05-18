@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { io } from 'socket.io-client';
 import { useAuthStore } from '../stores/authStore.js';
 import { useSocketStore } from '../stores/socketStore.js';
@@ -8,20 +8,35 @@ import { toast } from '../components/ui/Toast.jsx';
 
 export const useSocket = () => {
   const { token, isAuthenticated } = useAuthStore();
-  const { socket, setSocket, setConnected, disconnect } = useSocketStore();
-  const { updateFriendMood } = useFriendStore();
-  const { addNotification } = useNotificationStore();
+  const { setSocket, setConnected } = useSocketStore();
+  const socketRef = useRef(null);
 
   useEffect(() => {
     if (!isAuthenticated || !token) {
-      if (socket) disconnect();
+      if (socketRef.current) {
+        socketRef.current.disconnect();
+        socketRef.current = null;
+        setSocket(null);
+        setConnected(false);
+      }
       return;
+    }
+
+    // Disconnect previous socket before creating new one
+    if (socketRef.current) {
+      socketRef.current.disconnect();
+      socketRef.current = null;
     }
 
     const newSocket = io({
       auth: { token },
       transports: ['websocket', 'polling'],
+      reconnectionAttempts: 10,
+      reconnectionDelay: 2000,
+      reconnectionDelayMax: 15000,
     });
+
+    socketRef.current = newSocket;
 
     newSocket.on('connect', () => {
       setConnected(true);
@@ -32,42 +47,51 @@ export const useSocket = () => {
     });
 
     newSocket.on('friend:mood:update', (data) => {
-      updateFriendMood(data.userId, data);
+      useFriendStore.getState().updateFriendMood(data.userId, data);
     });
 
     newSocket.on('notification:new', (notification) => {
-      addNotification(notification);
+      useNotificationStore.getState().addNotification(notification);
     });
 
     newSocket.on('reaction:received', (reaction) => {
-      addNotification({
+      useNotificationStore.getState().addNotification({
         id: reaction.id,
         type: 'reaction',
-        title: 'New Reaction',
-        body: `Someone sent you a ${reaction.type}`,
+        title: 'Yeni Reaksiyon',
+        body: `Birisi sana ${reaction.type} gönderdi`,
         read: false,
         createdAt: new Date().toISOString(),
       });
-      toast(`❤️ Someone sent you a ${reaction.type}`, 'info');
+      toast(`❤️ Birisi sana ${reaction.type} gönderdi`, 'info');
     });
 
     newSocket.on('message:new', (message) => {
-      const senderName = message.sender?.displayName || 'Someone';
-      addNotification({
+      // Don't toast if user is currently on the messages page viewing this chat
+      const isOnMessagesPage = window.location.pathname.startsWith('/messages/');
+      if (isOnMessagesPage) return;
+
+      const senderName = message.sender?.displayName || 'Birisi';
+      useNotificationStore.getState().addNotification({
         id: message.id,
         type: 'message',
-        title: 'New Message',
-        body: `${senderName} sent you a message`,
+        title: 'Yeni Mesaj',
+        body: `${senderName} sana mesaj gönderdi`,
         read: false,
         createdAt: new Date().toISOString(),
       });
-      toast(`💬 ${senderName}: ${message.msgType === 'meme' ? 'sent a meme' : message.msgType === 'music' ? 'shared a song' : message.content?.slice(0, 50) || 'New message'}`, 'info');
+
+      const preview = message.msgType === 'meme' ? 'meme gönderdi'
+        : message.msgType === 'music' ? 'şarkı paylaştı'
+        : message.content?.slice(0, 50) || 'Yeni mesaj';
+      toast(`💬 ${senderName}: ${preview}`, 'info');
     });
 
     setSocket(newSocket);
 
     return () => {
       newSocket.disconnect();
+      socketRef.current = null;
     };
   }, [isAuthenticated, token]);
 };
