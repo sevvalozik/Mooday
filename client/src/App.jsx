@@ -61,6 +61,7 @@ export default function App() {
         <Route path="/friends/:id" element={<ProtectedRoute><FriendProfile /></ProtectedRoute>} />
         <Route path="/messages" element={<ProtectedRoute><Messages /></ProtectedRoute>} />
         <Route path="/messages/:friendId" element={<ProtectedRoute><Messages /></ProtectedRoute>} />
+        <Route path="/messages/group/:groupId" element={<ProtectedRoute><Messages /></ProtectedRoute>} />
         <Route path="/groups" element={<ProtectedRoute><Groups /></ProtectedRoute>} />
         <Route path="/weekly" element={<ProtectedRoute><WeeklyInsights /></ProtectedRoute>} />
         <Route path="/summary" element={<ProtectedRoute><MonthlySummary /></ProtectedRoute>} />

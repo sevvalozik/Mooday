@@ -9,14 +9,48 @@ try {
   getIO = null;
 }
 
-export const sendMessage = async (senderId, { receiverId, content, msgType }) => {
+export const sendMessage = async (senderId, { receiverId, groupId, content, msgType }) => {
+  // Group message
+  if (groupId) {
+    const member = await prisma.groupMember.findUnique({
+      where: { groupId_userId: { groupId, userId: senderId } },
+    });
+    if (!member) {
+      throw new AppError('Bu grubun üyesi değilsiniz', 403, 'NOT_MEMBER');
+    }
+
+    const message = await prisma.message.create({
+      data: {
+        senderId,
+        groupId,
+        content,
+        msgType: msgType || 'text',
+      },
+      include: {
+        sender: {
+          select: { id: true, username: true, displayName: true, avatarUrl: true },
+        },
+      },
+    });
+
+    if (getIO) {
+      try {
+        const io = getIO();
+        io.to(`group:${groupId}`).emit('message:new', { ...message, groupId });
+      } catch { /* non-critical */ }
+    }
+
+    return message;
+  }
+
+  // DM message
   if (senderId === receiverId) {
-    throw new AppError('Cannot send a message to yourself', 400, 'SELF_MESSAGE');
+    throw new AppError('Kendinize mesaj gönderemezsiniz', 400, 'SELF_MESSAGE');
   }
 
   const receiver = await prisma.user.findUnique({ where: { id: receiverId } });
   if (!receiver) {
-    throw new AppError('Receiver not found', 404, 'USER_NOT_FOUND');
+    throw new AppError('Kullanıcı bulunamadı', 404, 'USER_NOT_FOUND');
   }
 
   const message = await prisma.message.create({
@@ -33,14 +67,11 @@ export const sendMessage = async (senderId, { receiverId, content, msgType }) =>
     },
   });
 
-  // Try to emit socket event for real-time delivery
   if (getIO) {
     try {
       const io = getIO();
       io.to(`user:${receiverId}`).emit('message:new', message);
-    } catch {
-      // Socket not initialized or emission failed — non-critical
-    }
+    } catch { /* non-critical */ }
   }
 
   return message;
@@ -94,5 +125,36 @@ export const getConversation = async (userId, friendId, page = 1, limit = 50) =>
       total,
       totalPages: Math.ceil(total / limit),
     },
+  };
+};
+
+export const getGroupConversation = async (userId, groupId, page = 1, limit = 50) => {
+  const member = await prisma.groupMember.findUnique({
+    where: { groupId_userId: { groupId, userId } },
+  });
+  if (!member) {
+    throw new AppError('Bu grubun üyesi değilsiniz', 403, 'NOT_MEMBER');
+  }
+
+  const skip = (page - 1) * limit;
+
+  const [messages, total] = await Promise.all([
+    prisma.message.findMany({
+      where: { groupId },
+      include: {
+        sender: {
+          select: { id: true, username: true, displayName: true, avatarUrl: true },
+        },
+      },
+      orderBy: { createdAt: 'desc' },
+      skip,
+      take: limit,
+    }),
+    prisma.message.count({ where: { groupId } }),
+  ]);
+
+  return {
+    messages: messages.reverse(),
+    pagination: { page, limit, total, totalPages: Math.ceil(total / limit) },
   };
 };

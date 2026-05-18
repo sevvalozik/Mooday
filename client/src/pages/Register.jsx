@@ -103,7 +103,7 @@ export const Register = () => {
                 </div>
               )}
 
-              <Input label="E-posta" type="email" placeholder="you@example.com" value={form.email} onChange={handleChange('email')} required />
+              <Input label="E-posta" type="email" placeholder="ornek@email.com" value={form.email} onChange={handleChange('email')} required />
               <Input label="Kullanıcı Adı" placeholder="kullanici_adi" value={form.username} onChange={handleChange('username')} required />
               <Input label="Görünen Ad" placeholder="Adın" value={form.displayName} onChange={handleChange('displayName')} required />
               <Input label="Şifre" type="password" placeholder="En az 6 karakter" value={form.password} onChange={handleChange('password')} required />

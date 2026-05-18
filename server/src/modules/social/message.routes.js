@@ -8,6 +8,7 @@ import { sendMessageSchema } from './message.controller.js';
 const router = Router();
 
 router.post('/', authenticate, validate(sendMessageSchema), asyncHandler(messageController.sendMessage));
+router.get('/group/:groupId', authenticate, asyncHandler(messageController.getGroupConversation));
 router.get('/:friendId', authenticate, asyncHandler(messageController.getConversation));
 
 export default router;

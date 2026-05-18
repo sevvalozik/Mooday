@@ -164,17 +164,6 @@ export const Settings = () => {
                 </button>
               ))}
             </div>
-            <div className="mt-3 flex justify-center gap-2">
-              {['calm', 'happiness', 'excitement', 'anger', 'sadness'].map((e) => (
-                <button
-                  key={e}
-                  onClick={() => setSpherePreview(e)}
-                  className={`rounded-full px-3 py-1 text-xs transition-colors ${spherePreview === e ? 'bg-purple-600 text-white' : 'bg-white/10 text-gray-400 hover:bg-white/15'}`}
-                >
-                  {e}
-                </button>
-              ))}
-            </div>
           </section>
         </div>
       </div>

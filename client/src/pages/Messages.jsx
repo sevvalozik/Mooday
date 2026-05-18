@@ -11,15 +11,16 @@ import { useSocketStore } from '../stores/socketStore.js';
 import { parseMeme } from '../utils/memes.js';
 import * as messageService from '../services/messageService.js';
 import * as friendService from '../services/friendService.js';
+import * as groupService from '../services/groupService.js';
 import * as musicService from '../services/musicService.js';
 
 const MemeCard = ({ content }) => {
   const meme = parseMeme(content);
-  if (!meme) return <p className="text-sm">{content}</p>;
+  if (!meme) return <p className="text-sm break-words">{content}</p>;
 
   return (
-    <div className={`flex flex-col items-center rounded-lg bg-gradient-to-br ${meme.bg} px-4 py-3`}>
-      <span className="text-4xl">{meme.emoji}</span>
+    <div className={`flex w-40 flex-col items-center rounded-lg bg-gradient-to-br ${meme.bg} px-4 py-3`}>
+      <span className="text-3xl">{meme.emoji}</span>
       <span className="mt-1 text-center text-xs font-medium text-white/90">{meme.text}</span>
     </div>
   );
@@ -68,7 +69,7 @@ const ImageCard = ({ content }) => {
       <img
         src={url}
         alt="shared"
-        className="max-h-60 w-full rounded-lg object-cover"
+        className="max-h-48 max-w-[16rem] rounded-lg object-cover"
         onError={() => setFailed(true)}
       />
     </a>
@@ -167,10 +168,11 @@ const ImageShareModal = ({ onSend, onClose }) => {
 };
 
 export const Messages = () => {
-  const { friendId } = useParams();
+  const { friendId, groupId } = useParams();
   const navigate = useNavigate();
   const user = useAuthStore((s) => s.user);
   const { friends, setFriends } = useFriendStore();
+  const [groups, setGroups] = useState([]);
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState('');
   const [sending, setSending] = useState(false);
@@ -179,6 +181,8 @@ export const Messages = () => {
   const [showImage, setShowImage] = useState(false);
   const messagesEndRef = useRef(null);
   const socket = useSocketStore((s) => s.socket);
+  const chatId = friendId || groupId;
+  const isGroupChat = !!groupId;
 
   const closeAllModals = () => {
     setShowMemes(false);
@@ -188,23 +192,30 @@ export const Messages = () => {
 
   useEffect(() => {
     friendService.getFriends().then(setFriends).catch(() => {});
+    groupService.getGroups().then(setGroups).catch(() => {});
   }, []);
 
   useEffect(() => {
-    if (friendId) {
+    if (groupId) {
+      messageService.getGroupConversation(groupId).then((data) => {
+        setMessages(data.messages || []);
+      }).catch(() => {});
+    } else if (friendId) {
       messageService.getConversation(friendId).then((data) => {
         setMessages(data.messages || []);
       }).catch(() => {});
     }
     closeAllModals();
-  }, [friendId]);
+  }, [friendId, groupId]);
 
   // Listen for real-time incoming messages via socket
   useEffect(() => {
     if (!socket) return;
 
     const handleIncoming = (message) => {
-      if (message.senderId === friendId) {
+      const matchesDM = !isGroupChat && message.senderId === friendId;
+      const matchesGroup = isGroupChat && message.groupId === groupId && message.senderId !== user?.id;
+      if (matchesDM || matchesGroup) {
         setMessages((prev) => {
           if (prev.some((m) => m.id === message.id)) return prev;
           return [...prev, message];
@@ -214,20 +225,22 @@ export const Messages = () => {
 
     socket.on('message:new', handleIncoming);
     return () => socket.off('message:new', handleIncoming);
-  }, [socket, friendId]);
+  }, [socket, friendId, groupId, isGroupChat, user?.id]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
+  const msgTarget = isGroupChat ? { groupId } : { receiverId: friendId };
+
   const handleSend = async (e) => {
     e.preventDefault();
-    if (!newMessage.trim() || !friendId) return;
+    if (!newMessage.trim() || !chatId) return;
 
     setSending(true);
     try {
       const msg = await messageService.sendMessage({
-        receiverId: friendId,
+        ...msgTarget,
         content: newMessage.trim(),
       });
       setMessages((prev) => [...prev, msg]);
@@ -240,12 +253,12 @@ export const Messages = () => {
   };
 
   const handleSendMeme = async (meme) => {
-    if (!friendId) return;
+    if (!chatId) return;
     closeAllModals();
     setSending(true);
     try {
       const msg = await messageService.sendMessage({
-        receiverId: friendId,
+        ...msgTarget,
         content: JSON.stringify({ emoji: meme.emoji, text: meme.text, bg: meme.bg }),
         msgType: 'meme',
       });
@@ -258,13 +271,15 @@ export const Messages = () => {
   };
 
   const handleSendSong = async (songData) => {
-    if (!friendId) return;
+    if (!chatId) return;
     closeAllModals();
     setSending(true);
     try {
-      await musicService.shareSong({ receiverId: friendId, ...songData }).catch(() => {});
+      if (!isGroupChat) {
+        await musicService.shareSong({ receiverId: friendId, ...songData }).catch(() => {});
+      }
       const msg = await messageService.sendMessage({
-        receiverId: friendId,
+        ...msgTarget,
         content: JSON.stringify({ songTitle: songData.songTitle, artistName: songData.artistName, songUrl: songData.songUrl, platform: songData.platform, note: songData.note }),
         msgType: 'music',
       });
@@ -277,12 +292,12 @@ export const Messages = () => {
   };
 
   const handleSendImage = async (imageUrl) => {
-    if (!friendId) return;
+    if (!chatId) return;
     closeAllModals();
     setSending(true);
     try {
       const msg = await messageService.sendMessage({
-        receiverId: friendId,
+        ...msgTarget,
         content: JSON.stringify({ url: imageUrl }),
         msgType: 'image',
       });
@@ -294,16 +309,16 @@ export const Messages = () => {
     }
   };
 
-  const showMobileFriendList = !friendId;
+  const showMobileFriendList = !chatId;
 
   return (
     <PageWrapper>
-      <div className="flex h-[calc(100vh-8rem)] gap-4 md:h-[calc(100vh-8rem)]">
+      <div className="flex h-[calc(100vh-8rem)] gap-4 overflow-hidden md:h-[calc(100vh-8rem)]">
         {/* Friend List */}
         <div className={`${
           showMobileFriendList ? 'flex' : 'hidden md:flex'
-        } w-full flex-col gap-1 overflow-y-auto rounded-xl border border-white/10 bg-white/5 p-3 md:w-64`}>
-          <h2 className="mb-2 px-2 text-sm font-semibold text-gray-400">Sohbetler</h2>
+        } w-full shrink-0 flex-col gap-1 overflow-y-auto rounded-xl border border-white/10 bg-white/5 p-3 md:w-64`}>
+          <h2 className="mb-2 px-2 text-sm font-semibold text-gray-400">Arkadaşlar</h2>
           {friends.length === 0 && (
             <p className="px-2 py-4 text-center text-sm text-gray-500">Henüz arkadaşın yok</p>
           )}
@@ -316,16 +331,33 @@ export const Messages = () => {
               }`}
             >
               <UserAvatar user={f} size="sm" />
-              <span className="text-sm">{f.displayName}</span>
+              <span className="text-sm truncate">{f.displayName}</span>
             </Link>
           ))}
+          {groups.length > 0 && (
+            <>
+              <h2 className="mt-3 mb-2 px-2 text-sm font-semibold text-gray-400">Gruplar</h2>
+              {groups.map((g) => (
+                <Link
+                  key={g.id}
+                  to={`/messages/group/${g.id}`}
+                  className={`flex items-center gap-3 rounded-lg px-3 py-2.5 transition-colors ${
+                    groupId === g.id ? 'bg-purple-600/20 text-white' : 'text-gray-400 hover:bg-white/5'
+                  }`}
+                >
+                  <span className="text-lg">{g.emoji || '👥'}</span>
+                  <span className="text-sm truncate">{g.name}</span>
+                </Link>
+              ))}
+            </>
+          )}
         </div>
 
         {/* Chat Area */}
         <div className={`${
           friendId ? 'flex' : 'hidden md:flex'
-        } flex-1 flex-col rounded-xl border border-white/10 bg-white/5`}>
-          {friendId ? (
+        } min-w-0 flex-1 flex-col rounded-xl border border-white/10 bg-white/5`}>
+          {chatId ? (
             <>
               {/* Chat header */}
               <div className="flex items-center gap-3 border-b border-white/10 px-4 py-3">
@@ -338,16 +370,23 @@ export const Messages = () => {
                   </svg>
                 </button>
                 <p className="font-semibold text-white">
-                  {friends.find((f) => f.id === friendId)?.displayName || 'Sohbet'}
+                  {isGroupChat
+                    ? (groups.find((g) => g.id === groupId)?.name || 'Grup Sohbeti')
+                    : (friends.find((f) => f.id === friendId)?.displayName || 'Sohbet')
+                  }
                 </p>
+                {isGroupChat && (
+                  <span className="text-xs text-gray-500">
+                    {groups.find((g) => g.id === groupId)?._count?.members || groups.find((g) => g.id === groupId)?.members?.length || ''} üye
+                  </span>
+                )}
               </div>
 
               {/* Messages */}
               <div className="flex-1 overflow-y-auto p-3 sm:p-4">
                 <div className="flex flex-col gap-3">
                   {messages.map((msg) => {
-                    // Compare with friendId — works even if user object not loaded yet
-                    const isOwn = msg.senderId !== friendId;
+                    const isOwn = isGroupChat ? msg.senderId === user?.id : msg.senderId !== friendId;
                     const isMeme = msg.msgType === 'meme';
                     const isMusic = msg.msgType === 'music';
                     const isImage = msg.msgType === 'image';
@@ -355,19 +394,22 @@ export const Messages = () => {
 
                     return (
                       <div key={msg.id} className={`flex ${isOwn ? 'justify-end' : 'justify-start'}`}>
-                        {/* Friend avatar — only on friend's messages */}
+                        {/* Avatar — only on others' messages */}
                         {!isOwn && (
                           <div className="mr-2 mt-auto shrink-0">
-                            <UserAvatar user={msg.sender || friends.find((f) => f.id === friendId)} size="xs" />
+                            <UserAvatar user={msg.sender || (!isGroupChat ? friends.find((f) => f.id === friendId) : null)} size="xs" />
                           </div>
                         )}
-                        <div className={`max-w-[75%] sm:max-w-[65%] ${
+                        <div className={`max-w-[75%] sm:max-w-[65%] min-w-0 ${
                           isSpecial
                             ? 'overflow-hidden rounded-2xl'
                             : isOwn
                               ? 'rounded-2xl rounded-br-md bg-purple-600 px-3.5 py-2.5 text-sm text-white'
                               : 'rounded-2xl rounded-bl-md bg-white/10 px-3.5 py-2.5 text-sm text-gray-100'
                         }`}>
+                          {isGroupChat && !isOwn && msg.sender && (
+                            <p className="mb-0.5 text-[11px] font-medium text-purple-400">{msg.sender.displayName}</p>
+                          )}
                           {isMeme ? (
                             <MemeCard content={msg.content} />
                           ) : isMusic ? (

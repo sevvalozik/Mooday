@@ -96,6 +96,7 @@ model Group {
   emoji     String        @default("👥")
   createdAt DateTime      @default(now())
   members   GroupMember[]
+  messages  Message[]     @relation("GroupMessages")
 }
 
 model GroupMember {
@@ -131,14 +132,17 @@ model Message {
   id         String   @id @default(uuid())
   senderId   String
   sender     User     @relation("MessageSender", fields: [senderId], references: [id], onDelete: Cascade)
-  receiverId String
-  receiver   User     @relation("MessageReceiver", fields: [receiverId], references: [id], onDelete: Cascade)
+  receiverId String?
+  receiver   User?    @relation("MessageReceiver", fields: [receiverId], references: [id], onDelete: Cascade)
+  groupId    String?
+  group      Group?   @relation("GroupMessages", fields: [groupId], references: [id], onDelete: Cascade)
   content    String
   msgType    String   @default("text")
   read       Boolean  @default(false)
   createdAt  DateTime @default(now())
 
   @@index([senderId, receiverId, createdAt])
+  @@index([groupId, createdAt])
 }
 
 model MusicShare {
